@@ -8,15 +8,16 @@ from datetime import datetime
 import uuid
 
 from core.selenium.browser import SeleniumBrowser
-from core.llm.base import create_llm_client, BaseLLMClient
+from core.llm.llm_services import create_llm_client
+from core.llm.base import BaseLLMClient
 from core.database.repository import DatabaseRepository
 from core.cache.cache_manager import CacheManager
 from core.config.settings import get_settings
-from utils.logger import get_logger
-from utils.hasher import Hasher
-from utils.validators import Validators
-from utils.text_cleaner import TextCleaner
-from utils.exceptions import (
+from core.utils.logger import get_logger
+from core.utils.hasher import Hasher
+from core.utils.validators import Validators
+from core.utils.text_cleaner import TextCleaner
+from core.utils.exceptions import (
     BrowserError, LLMError, ExtractionError, ValidationError
 )
 

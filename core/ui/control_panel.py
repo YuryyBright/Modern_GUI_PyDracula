@@ -4,9 +4,9 @@ from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QPushButton, 
     QLabel, QComboBox, QLineEdit, QGroupBox, QTextEdit
 )
-from PySide6.QtCore import pyqtSignal, Qt
 
-from utils.logger import get_logger
+from PySide6.QtCore import Signal
+from core.utils.logger import get_logger
 
 
 logger = get_logger(__name__)
@@ -19,12 +19,12 @@ class ControlPanel(QWidget):
     """
     
     # Сигнали для комунікації з головним вікном
-    start_session_signal = pyqtSignal(str)  # mode
-    stop_session_signal = pyqtSignal()
-    navigate_signal = pyqtSignal(str)  # url
-    extract_signal = pyqtSignal(str, str)  # selector, selector_type
-    analyze_signal = pyqtSignal(str)  # prompt_type
-    clear_cache_signal = pyqtSignal()
+    start_session_signal = Signal(str)  # mode
+    stop_session_signal = Signal()
+    navigate_signal = Signal(str)  # url
+    extract_signal = Signal(str, str)  # selector, selector_type
+    analyze_signal = Signal(str)  # prompt_type
+    clear_cache_signal = Signal()
     
     def __init__(self, parent=None):
         """Ініціалізація панелі керування"""

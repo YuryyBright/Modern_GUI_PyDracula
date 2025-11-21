@@ -4,13 +4,13 @@ from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QTableWidget, QTableWidgetItem,
     QHeaderView, QPushButton, QHBoxLayout
 )
-from PySide6.QtCore import pyqtSignal
+from PySide6.QtCore import Signal
 
 
 class HistoryWidget(QWidget):
     """Віджет історії запитів"""
     
-    load_item_signal = pyqtSignal(int)  # extraction_id
+    load_item_signal = Signal(int)  # extraction_id
     
     def __init__(self, parent=None):
         super().__init__(parent)

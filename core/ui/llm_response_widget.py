@@ -1,6 +1,6 @@
 # ==================== ui/llm_response_widget.py ====================
 
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QTextEdit, QLabel, QHBoxLayout
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QTextEdit, QLabel, QHBoxLayout
 
 
 class LLMResponseWidget(QWidget):

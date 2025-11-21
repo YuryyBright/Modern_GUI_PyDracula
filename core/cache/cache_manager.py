@@ -10,8 +10,8 @@ from datetime import datetime, timedelta
 from core.database.repository import DatabaseRepository
 from core.database.models import CachedResponse
 from core.config.settings import get_settings
-from utils.hasher import Hasher
-from utils.logger import get_logger
+from core.utils.hasher import Hasher
+from core.utils.logger import get_logger
 
 
 logger = get_logger(__name__)

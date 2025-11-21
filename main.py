@@ -121,7 +121,7 @@ class MainWindow(QMainWindow):
         
         # Додавання до існуючого layout
         # Припустимо, у вас є права колонка або нижня панель
-        widgets.rightMenuContainer.layout().addWidget(self.control_panel)
+        widgets.new_page.layout().addWidget(self.control_panel)
         
         # Text Display Widget (оригінальний текст)
         self.text_display = TextDisplayWidget(self)
@@ -233,7 +233,7 @@ class MainWindow(QMainWindow):
             navigate_task,
             on_complete=self.on_navigate_complete,
             on_error=self.on_navigate_error,
-            on_progress=self.on_task_progress
+            on_progress=self.onTaskProgress
         )
 
 
@@ -276,7 +276,7 @@ class MainWindow(QMainWindow):
             extract_task,
             on_complete=self.on_extract_complete,
             on_error=self.on_extract_error,
-            on_progress=self.on_task_progress
+            on_progress=self.onTaskProgress
         )
 
 
@@ -341,7 +341,7 @@ class MainWindow(QMainWindow):
             analyze_task,
             on_complete=self.on_analyze_complete,
             on_error=self.on_analyze_error,
-            on_progress=self.on_task_progress
+            on_progress=self.onTaskProgress
         )
 
 
@@ -719,15 +719,18 @@ class MainWindow(QMainWindow):
         self.dragPos = event.globalPos()
 
     def closeEvent(self, event):
-        """Обробка закриття вікна"""
         print("[INFO] Closing application...")
+        
+        # WEB ASSISTANT CLEANUP
+        if hasattr(self, 'web_analyzer'):
+            try:
+                self.web_analyzer.end_session()
+            except Exception as e:
+                logger.error(f"Error ending session: {e}")
         
         # Stop all running tasks
         self.task_manager.stop_all()
         self.task_manager.wait_all()
-        
-        # Clean up resources
-        # self.db.close()
         
         event.accept()
 
