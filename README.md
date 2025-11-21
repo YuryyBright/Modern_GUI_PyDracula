@@ -1,77 +1,518 @@
-# PyDracula - Modern GUI PySide6 / PyQt6
-# 
+# 🤖 Web Assistant - AI-Powered Web Analysis Tool
 
-> ## :gift: **//// DONATE ////**
-> ## 🔗 Donate (Gumroad): https://gum.co/mHsRC
-> This interface is free for any use, but if you are going to use it commercially, consider helping to maintain this project and others with a donation by Gumroado at the link above. This helps to keep this and other projects active.
+**Інтерактивний асистент для аналізу веб-сторінок з використанням Selenium та локальної LLM**
 
-> **Warning**: this project was created using PySide6 and Python 3.9, using previous versions can cause compatibility problems.
+[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
+[![PyQt6](https://img.shields.io/badge/GUI-PyQt6-green.svg)](https://www.riverbankcomputing.com/software/pyqt/)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-# YouTube - Presentation And Tutorial
-Presentation and tutorial video with the main functions of the user interface.
-> 🔗 https://youtu.be/9DnaHg4M_AM
+## 📋 Зміст
 
-# Multiple Themes
-![PyDracula_Default_Dark](https://user-images.githubusercontent.com/60605512/112993874-0b647700-9140-11eb-8670-61322d70dbe3.png)
-![PyDracula_Light](https://user-images.githubusercontent.com/60605512/112993918-18816600-9140-11eb-837c-e7a7c3d2b05e.png)
+- [Опис](#опис)
+- [Можливості](#можливості)
+- [Архітектура](#архітектура)
+- [Встановлення](#встановлення)
+- [Конфігурація](#конфігурація)
+- [Використання](#використання)
+- [Структура проєкту](#структура-проєкту)
+- [Розробка](#розробка)
 
-# High DPI
-> Qt Widgets is an old technology and does not have a good support for high DPI settings, making these images look distorted when your system has DPI applied above 100%.
-You can minimize this problem using a workaround by applying this code below in "main.py" just below the import of the Qt modules.
-```python
-# ADJUST QT FONT DPI FOR HIGHT SCALE
-# ///////////////////////////////////////////////////////////////
-from modules import *
-from widgets import *
-os.environ["QT_FONT_DPI"] = "96"
+---
+
+## 🎯 Опис
+
+Web Assistant - це потужний десктопний додаток на PyQt6, який дозволяє:
+
+1. **Переглядати веб-сторінки** через Selenium WebDriver разом з користувачем
+2. **Витягувати текст** з HTML-елементів у трьох режимах:
+   - 🤖 **Автоматичний** - програма сама знаходить контент
+   - 🔄 **Напівавтоматичний** - програма пропонує, користувач підтверджує
+   - ✋ **Ручний** - користувач вказує селектори
+3. **Аналізувати текст** за допомогою локальної LLM (LM Studio/Ollama)
+4. **Кешувати результати** для уникнення повторних запитів
+5. **Зберігати історію** всіх витягувань та аналізів у SQLite
+
+---
+
+## ✨ Можливості
+
+### 🌐 Веб-скрапінг
+- Підтримка Chrome, Firefox, Edge
+- Автоматичне визначення контентних елементів
+- Виділення елементів на сторінці
+- Витягування тексту з CSS/XPath селекторів
+- Робота з динамічними сторінками
+
+### 🧠 LLM Інтеграція
+- Підтримка **LM Studio** (OpenAI-сумісний API)
+- Підтримка **Ollama**
+- Налаштовувані промпти
+- Множинні режими аналізу (резюме, витягування інфо, загальний аналіз)
+
+### 💾 База даних
+- SQLite з SQLAlchemy ORM
+- Історія всіх витягувань
+- Кешування відповідей LLM
+- Статистика використання
+- Дедуплікація контенту через хешування
+
+### 🎨 UI/UX
+- Сучасний інтерфейс на базі PyDracula Theme
+- Вбудований або overlay браузер
+- Панель з оригінальним текстом
+- Панель з результатом LLM
+- Debug панель з логами в реальному часі
+- Історія запитів
+- Перегляд та управління базою даних
+
+### ⚡ Продуктивність
+- Асинхронне виконання задач (QThread)
+- Менеджер задач для контролю паралельності
+- Система подій (Event Handler)
+- Кешування для швидкості
+
+---
+
+## 🏗️ Архітектура
+
+Проєкт побудований з використанням **Clean Architecture** з чітким поділом на шари:
+
+```
+┌─────────────────────────────────────┐
+│         UI Layer (PyQt6)            │  ← Presentation
+├─────────────────────────────────────┤
+│      Services (Business Logic)       │  ← Domain
+├─────────────────────────────────────┤
+│   Core (Database, Selenium, LLM)    │  ← Infrastructure
+└─────────────────────────────────────┘
 ```
 
-# Running
-> Inside your preferred terminal run the commands below depending on your system, remembering before installing Python 3.9> and PySide6 "pip install PySide6".
-> ## **Windows**:
-```console
+### Ключові компоненти:
+
+- **Core Layer**: База даних, Selenium, LLM клієнти, кеш
+- **Services Layer**: Бізнес-логіка для аналізу, кешування, історії
+- **UI Layer**: PyQt6 віджети та вікна
+- **Utils**: Логування, валідація, хешування, винятки
+
+---
+
+## 📦 Встановлення
+
+### Вимоги
+
+- **Python 3.10+**
+- **pip** або **poetry**
+- **Google Chrome** (для Selenium)
+- **LM Studio** або **Ollama** (для LLM)
+
+### Крок 1: Клонування репозиторію
+
+```bash
+git clone https://github.com/yourusername/web-assistant.git
+cd web-assistant
+```
+
+### Крок 2: Створення віртуального середовища
+
+```bash
+python -m venv venv
+
+# Windows
+venv\Scripts\activate
+
+# Linux/Mac
+source venv/bin/activate
+```
+
+### Крок 3: Встановлення залежностей
+
+```bash
+pip install -r requirements.txt
+```
+
+Або з Poetry:
+
+```bash
+poetry install
+```
+
+### Крок 4: Налаштування LLM
+
+#### Варіант A: LM Studio
+
+1. Завантажте та встановіть [LM Studio](https://lmstudio.ai/)
+2. Завантажте модель (наприклад, `TheBloke/Mistral-7B-Instruct-v0.2-GGUF`)
+3. Запустіть локальний сервер:
+   - `Cmd+L` або `Ctrl+L` → Start Server
+   - За замовчуванням: `http://localhost:1234`
+
+#### Варіант B: Ollama
+
+1. Завантажте [Ollama](https://ollama.ai/)
+2. Встановіть модель:
+   ```bash
+   ollama pull llama2
+   # або
+   ollama pull mistral
+   ```
+3. Сервер запуститься автоматично на `http://localhost:11434`
+
+### Крок 5: Ініціалізація бази даних
+
+```bash
+python scripts/setup_database.py
+```
+
+### Крок 6: Запуск застосунку
+
+```bash
 python main.py
 ```
-> ## **MacOS and Linux**:
-```console
-python3 main.py
+
+---
+
+## ⚙️ Конфігурація
+
+Основні налаштування знаходяться у `config.yaml`:
+
+### Приклад конфігурації
+
+```yaml
+# LLM провайдер
+llm:
+  provider: "lm_studio"  # або "ollama"
+  
+  lm_studio:
+    base_url: "http://localhost:1234/v1"
+    model: "local-model"
+    temperature: 0.7
+    max_tokens: 2000
+
+# Selenium
+selenium:
+  browser: "chrome"  # chrome, firefox, edge
+  headless: false
+  window_size:
+    width: 1920
+    height: 1080
+
+# Режими роботи
+modes:
+  auto:
+    enabled: true
+    selectors:
+      - "article"
+      - "main"
+      - ".content"
+  
+  semi_auto:
+    enabled: true
+    suggest_selectors: true
+  
+  manual:
+    enabled: true
+    show_devtools: true
+
+# Кешування
+cache:
+  enabled: true
+  ttl: 86400  # 24 години
+  max_size: 1000
 ```
-# Compiling
-> ## **Windows**:
-```console
-python setup.py build
+
+### Змінні середовища (.env)
+
+Створіть `.env` файл для чутливих даних:
+
+```env
+# Database
+DATABASE_PATH=data/web_assistant.db
+
+# LLM
+LM_STUDIO_URL=http://localhost:1234/v1
+OLLAMA_URL=http://localhost:11434
+
+# Logging
+LOG_LEVEL=INFO
+DEBUG=False
 ```
 
-# Project Files And Folders
-> **main.py**: application initialization file.
+---
 
-> **main.ui**: Qt Designer project.
+## 🚀 Використання
 
-> **resouces.qrc**: Qt Designer resoucers, add here your resources using Qt Designer. Use version 6 >
+### Базовий робочий процес
 
-> **setup.py**: cx-Freeze setup to compile your application (configured for Windows).
+1. **Запустіть застосунок**
+   ```bash
+   python main.py
+   ```
 
-> **themes/**: add here your themes (.qss).
+2. **Виберіть режим роботи**
+   - Автоматичний: програма знайде контент сама
+   - Напівавтоматичний: підтвердження перед витягуванням
+   - Ручний: вкажіть CSS/XPath селектор
 
-> **modules/**: module for running PyDracula GUI.
+3. **Введіть URL та натисніть "Navigate"**
 
-> **modules/app_funtions.py**: add your application's functions here.
-Up
-> **modules/app_settings.py**: global variables to configure user interface.
+4. **Для ручного режиму:**
+   - Відкрийте DevTools (F12)
+   - Знайдіть потрібний елемент
+   - Скопіюйте CSS Selector або XPath
+   - Вставте у поле "Selector"
 
-> **modules/resources_rc.py**: "resource.qrc" file compiled for python using the command: ```pyside6-rcc resources.qrc -o resources_rc.py```.
+5. **Натисніть "Extract Text"**
+   - Текст з'явиться в лівій панелі
+   - Автоматично відправиться на аналіз LLM
 
-> **modules/ui_functions.py**: add here only functions related to the user interface / GUI.
+6. **Результат LLM**
+   - Відображається в правій панелі
+   - Зберігається в історії
+   - Кешується для повторного використання
 
-> **modules/ui_main.py**: file related to the user interface exported by Qt Designer. You can compile it manually using the command: ```pyside6-uic main.ui> ui_main.py ```.
-After expoting in .py and change the line "import resources_rc" to "from. Resoucers_rc import *" to use as a module.
+### Приклади використання
 
-> **images/**: put all your images and icons here before converting to Python (resources_re.py) ```pyside6-rcc resources.qrc -o resources_rc.py```.
+#### Аналіз новинної статті
 
-# Projects Created Using PyDracula
-**See the projects that were created using PyDracula.**
-> To participate create a "Issue" with the name beginning with "#pydracula_project", leaving the link of your project on Github, name of the creator and what is its functionality. Your project will be added and this list will be deleted from "Issue".
-**Malicious programs will not be added**!
+```python
+URL: https://www.bbc.com/news/some-article
+Selector: article.article__body  # або автоматично
+Режим: Автоматичний
+→ Результат: Резюме статті, ключові факти
+```
 
+#### Витягування інформації з продукту
 
+```python
+URL: https://shop.com/product/123
+Selector: .product-description
+Режим: Напівавтоматичний
+→ Результат: Основні характеристики продукту
+```
 
+---
+
+## 📂 Структура проєкту
+
+```
+web_assistant/
+├── main.py                     # Точка входу
+├── config.yaml                 # Конфігурація
+├── requirements.txt
+├── README.md
+│
+├── core/                       # Ядро
+│   ├── config/
+│   │   └── settings.py         # Завантаження config.yaml
+│   ├── database/
+│   │   ├── models.py           # SQLAlchemy моделі
+│   │   └── repository.py       # Репозиторій
+│   ├── selenium/
+│   │   ├── browser.py          # WebDriver wrapper
+│   │   ├── element_selector.py
+│   │   ├── text_extractor.py
+│   │   └── modes.py            # Режими роботи
+│   ├── llm/
+│   │   ├── base.py             # Базовий клас
+│   │   ├── lm_studio_client.py
+│   │   ├── ollama_client.py
+│   │   └── prompts.py
+│   └── cache/
+│       └── cache_manager.py
+│
+├── services/                   # Бізнес-логіка
+│   ├── web_analyzer_service.py
+│   ├── llm_service.py
+│   └── cache_service.py
+│
+├── ui/                         # UI компоненти
+│   ├── browser_widget.py
+│   ├── text_display_widget.py
+│   ├── llm_response_widget.py
+│   ├── history_widget.py
+│   ├── debug_panel.py
+│   └── control_panel.py
+│
+├── utils/                      # Утиліти
+│   ├── logger.py
+│   ├── validators.py
+│   ├── hasher.py
+│   └── exceptions.py
+│
+├── tests/                      # Тести
+│   ├── test_database.py
+│   ├── test_selenium.py
+│   └── test_llm.py
+│
+└── logs/                       # Логи
+    └── app.log
+```
+
+---
+
+## 🛠️ Розробка
+
+### Додавання нового режиму витягування
+
+1. Створіть клас у `core/selenium/modes.py`:
+
+```python
+class CustomMode(ExtractionMode):
+    def extract(self, browser, url):
+        # Ваша логіка
+        pass
+```
+
+2. Зареєструйте у `services/web_analyzer_service.py`
+
+### Додавання нового LLM провайдера
+
+1. Створіть клас у `core/llm/`:
+
+```python
+class NewLLMClient(BaseLLMClient):
+    def generate(self, prompt, **kwargs):
+        # Реалізація
+        pass
+```
+
+2. Додайте у фабрику `create_llm_client()`
+
+### Тестування
+
+```bash
+# Всі тести
+pytest
+
+# З покриттям
+pytest --cov=core --cov=services --cov=ui
+
+# Конкретний модуль
+pytest tests/test_database.py -v
+```
+
+### Форматування коду
+
+```bash
+# Black
+black .
+
+# isort
+isort .
+
+# flake8
+flake8 core/ services/ ui/
+```
+
+---
+
+## 📊 База даних
+
+### Таблиці
+
+1. **extraction_history** - Історія витягувань
+   - url, selector, extracted_text, text_hash
+   - extraction_mode, created_at
+
+2. **llm_requests** - Запити до LLM
+   - prompt, response, provider, model
+   - tokens_used, processing_time
+
+3. **cached_responses** - Кеш відповідей
+   - cache_key, input_hash, response
+   - hits, expires_at
+
+4. **sessions** - Сесії роботи
+   - session_id, mode, statistics
+
+5. **selectors** - Збережені селектори
+   - selector, domain_pattern, usage_count
+
+### Перегляд БД
+
+```bash
+# SQLite CLI
+sqlite3 data/web_assistant.db
+
+# SQL запити
+SELECT * FROM extraction_history LIMIT 10;
+SELECT COUNT(*) FROM llm_requests;
+```
+
+Або через UI: `Settings → Database Viewer`
+
+---
+
+## 🔧 Налагодження
+
+### Логи
+
+Логи зберігаються у `logs/`:
+- `app.log` - Загальний лог
+- `selenium.log` - Selenium операції
+- `llm.log` - LLM запити/відповіді
+
+### Debug режим
+
+У `config.yaml`:
+
+```yaml
+app:
+  debug: true
+  log_level: "DEBUG"
+
+ui:
+  show_debug_panel: true
+```
+
+### Типові проблеми
+
+**WebDriver не запускається**
+```bash
+# Оновіть webdriver-manager
+pip install --upgrade webdriver-manager
+```
+
+**LLM не відповідає**
+- Перевірте, чи запущений сервер
+- Подивіться логи LM Studio/Ollama
+- Спробуйте іншу модель
+
+**Повільна робота**
+- Увімкніть headless режим
+- Зменшіть max_tokens
+- Збільшіть кеш TTL
+
+---
+
+## 📝 Ліцензія
+
+MIT License - дивіться [LICENSE](LICENSE)
+
+---
+
+## 👥 Автори
+
+- Ваше ім'я - [@your-github](https://github.com/yourusername)
+
+---
+
+## 🙏 Подяки
+
+- [PyDracula](https://github.com/Wanderson-Magalhaes/Modern_GUI_PyDracula_PySide6_or_PyQt6) - UI шаблон
+- [LM Studio](https://lmstudio.ai/) - Локальний LLM сервер
+- [Ollama](https://ollama.ai/) - Альтернативний LLM рантайм
+
+---
+
+## 📞 Підтримка
+
+Якщо у вас є питання або проблеми:
+
+1. Перевірте [Issues](https://github.com/yourusername/web-assistant/issues)
+2. Створіть новий Issue з детальним описом
+3. Приєднуйтесь до [Discussions](https://github.com/yourusername/web-assistant/discussions)
+
+---
+
+**Happy Web Analyzing! 🚀**

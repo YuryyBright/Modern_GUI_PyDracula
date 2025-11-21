@@ -1,0 +1,203 @@
+# Web Assistant Configuration
+
+# Application Settings
+app:
+  name: "Web Assistant"
+  version: "1.0.0"
+  debug: true
+  log_level: "INFO" # DEBUG, INFO, WARNING, ERROR, CRITICAL
+
+# Database Configuration
+database:
+  type: "sqlite"
+  path: "data/web_assistant.db"
+  echo: false # SQL echo for debugging
+  pool_size: 5
+  max_overflow: 10
+
+# Selenium Configuration
+selenium:
+  browser: "chrome" # chrome, firefox, edge
+  headless: false
+  implicit_wait: 10 # seconds
+  page_load_timeout: 30 # seconds
+  window_size:
+    width: 1920
+    height: 1080
+  user_agent: null # null for default
+  proxy: null # null or "http://proxy:port"
+  download_dir: "downloads"
+
+  # WebDriver options
+  options:
+    disable_images: false
+    disable_javascript: false
+    disable_notifications: true
+    disable_popup: true
+    incognito: false
+
+# LLM Configuration
+llm:
+  provider: "lm_studio" # lm_studio, ollama
+
+  # LM Studio settings
+  lm_studio:
+    base_url: "http://localhost:1234/v1"
+    model: "local-model"
+    max_tokens: 2000
+    temperature: 0.7
+    top_p: 0.9
+    timeout: 60 # seconds
+
+  # Ollama settings
+  ollama:
+    base_url: "http://localhost:11434"
+    model: "llama2"
+    max_tokens: 2000
+    temperature: 0.7
+    timeout: 60
+
+  # Prompt templates
+  prompts:
+    system: |
+      Ти асистент для аналізу веб-контенту. 
+      Твоя задача - аналізувати текст з веб-сторінок та надавати корисні інсайти.
+      Відповідай українською мовою, будь лаконічним та інформативним.
+
+    analyze_text: |
+      Проаналізуй наступний текст з веб-сторінки:
+
+      URL: {url}
+      Селектор: {selector}
+
+      Текст:
+      {text}
+
+      Надай короткий аналіз та ключові висновки.
+
+    summarize: |
+      Створи стислий резюме наступного тексту:
+      {text}
+
+    extract_info: |
+      Витягни ключову інформацію з тексту:
+      {text}
+
+      Формат відповіді: маркований список.
+
+# Cache Configuration
+cache:
+  enabled: true
+  max_size: 1000 # maximum cached items
+  ttl: 86400 # time to live in seconds (24 hours)
+  use_hash: true # use text hash for deduplication
+  hash_algorithm: "md5" # md5, sha256
+
+# Extraction Modes
+modes:
+  auto:
+    enabled: true
+    selectors:
+      - "article"
+      - "main"
+      - ".content"
+      - "#main-content"
+      - ".post-content"
+      - ".article-body"
+    min_text_length: 100
+
+  semi_auto:
+    enabled: true
+    suggest_selectors: true
+    confirm_before_extract: true
+
+  manual:
+    enabled: true
+    show_devtools: true
+
+# UI Configuration
+ui:
+  theme: "dark" # dark, light
+  language: "uk" # uk, en
+  show_debug_panel: true
+  auto_scroll: true
+  syntax_highlighting: true
+
+  # Window settings
+  window:
+    width: 1600
+    height: 900
+    resizable: true
+
+  # Panel positions
+  panels:
+    browser:
+      position: "left"
+      width: 60 # percentage
+
+    results:
+      position: "right"
+      width: 40 # percentage
+
+    debug:
+      position: "bottom"
+      height: 200 # pixels
+      collapsible: true
+
+# Logging Configuration
+logging:
+  level: "INFO"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  date_format: "%Y-%m-%d %H:%M:%S"
+
+  # File handlers
+  file:
+    enabled: true
+    path: "logs/app.log"
+    max_bytes: 10485760 # 10MB
+    backup_count: 5
+
+  # Console handler
+  console:
+    enabled: true
+    colored: true
+
+  # Specific loggers
+  loggers:
+    selenium:
+      level: "WARNING"
+      file: "logs/selenium.log"
+
+    llm:
+      level: "INFO"
+      file: "logs/llm.log"
+
+    database:
+      level: "INFO"
+      file: "logs/database.log"
+
+# Performance Settings
+performance:
+  max_concurrent_tasks: 3
+  request_timeout: 30
+  retry_attempts: 3
+  retry_delay: 1 # seconds
+
+# Security Settings
+security:
+  allowed_domains: [] # empty = all allowed
+  blocked_domains:
+    - "malicious.com"
+    - "spam.site"
+  max_text_length: 50000 # characters
+  sanitize_input: true
+
+# Export Settings
+export:
+  formats:
+    - "json"
+    - "csv"
+    - "txt"
+  default_format: "json"
+  directory: "exports"
+  include_metadata: true
