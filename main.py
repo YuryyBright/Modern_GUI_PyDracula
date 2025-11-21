@@ -466,8 +466,8 @@ class MainWindow(QMainWindow):
         widgets.btn_save.clicked.connect(lambda: self.event_handler.handle('save_data'))
         
         # ACTION BUTTONS with async support
-        widgets.start.clicked.connect(lambda: self.event_handler.handle('start_task'))
-        widgets.stop.clicked.connect(lambda: self.event_handler.handle('stop_task'))
+        # widgets.start.clicked.connect(lambda: self.event_handler.handle('start_task'))
+        # widgets.stop.clicked.connect(lambda: self.event_handler.handle('stop_task'))
 
         # EXTRA LEFT BOX
         widgets.toggleLeftBox.clicked.connect(lambda: UIFunctions.toggleLeftBox(self, True))

@@ -28,6 +28,7 @@ from PySide6.QtWidgets import (QAbstractItemView, QAbstractScrollArea, QApplicat
     QTextBrowser, QTextEdit, QVBoxLayout, QWidget)
 
 
+
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
@@ -1387,54 +1388,6 @@ class Ui_MainWindow(object):
         self.new_page.setObjectName(u"new_page")
         self.verticalLayout_20 = QVBoxLayout(self.new_page)
         self.verticalLayout_20.setObjectName(u"verticalLayout_20")
-        self.horizontalLayout_7 = QHBoxLayout()
-        self.horizontalLayout_7.setObjectName(u"horizontalLayout_7")
-        self.start = QPushButton(self.new_page)
-        self.start.setObjectName(u"start")
-        self.start.setMinimumSize(QSize(100, 50))
-
-        self.horizontalLayout_7.addWidget(self.start)
-
-        self.stop = QPushButton(self.new_page)
-        self.stop.setObjectName(u"stop")
-        self.stop.setMinimumSize(QSize(100, 50))
-
-        self.horizontalLayout_7.addWidget(self.stop)
-
-        self.horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
-
-        self.horizontalLayout_7.addItem(self.horizontalSpacer)
-
-
-        self.verticalLayout_20.addLayout(self.horizontalLayout_7)
-
-        self.verticalLayout_22 = QVBoxLayout()
-        self.verticalLayout_22.setObjectName(u"verticalLayout_22")
-        self.text_debug = QScrollArea(self.new_page)
-        self.text_debug.setObjectName(u"text_debug")
-        self.text_debug.setWidgetResizable(True)
-        self.scrollAreaWidgetContents_2 = QWidget()
-        self.scrollAreaWidgetContents_2.setObjectName(u"scrollAreaWidgetContents_2")
-        self.scrollAreaWidgetContents_2.setGeometry(QRect(0, 0, 1152, 509))
-        self.verticalLayout_25 = QVBoxLayout(self.scrollAreaWidgetContents_2)
-        self.verticalLayout_25.setObjectName(u"verticalLayout_25")
-        self.debug_workflow = QTextBrowser(self.scrollAreaWidgetContents_2)
-        self.debug_workflow.setObjectName(u"debug_workflow")
-
-        self.verticalLayout_25.addWidget(self.debug_workflow)
-
-        self.text_debug.setWidget(self.scrollAreaWidgetContents_2)
-
-        self.verticalLayout_22.addWidget(self.text_debug)
-
-
-        self.verticalLayout_20.addLayout(self.verticalLayout_22)
-
-        self.horizontalLayout_8 = QHBoxLayout()
-        self.horizontalLayout_8.setObjectName(u"horizontalLayout_8")
-
-        self.verticalLayout_20.addLayout(self.horizontalLayout_8)
-
         self.stackedWidget.addWidget(self.new_page)
 
         self.verticalLayout_15.addWidget(self.stackedWidget)
@@ -1699,13 +1652,9 @@ class Ui_MainWindow(object):
         ___qtablewidgetitem23.setText(QCoreApplication.translate("MainWindow", u"Line", None));
         self.tableWidget.setSortingEnabled(__sortingEnabled)
 
-        self.start.setText(QCoreApplication.translate("MainWindow", u"Start", None))
-        self.stop.setText(QCoreApplication.translate("MainWindow", u"Stop", None))
         self.btn_message.setText(QCoreApplication.translate("MainWindow", u"Message", None))
         self.btn_print.setText(QCoreApplication.translate("MainWindow", u"Print", None))
         self.btn_logout.setText(QCoreApplication.translate("MainWindow", u"Logout", None))
         self.creditsLabel.setText(QCoreApplication.translate("MainWindow", u"By: Wanderson M. Pimenta", None))
         self.version.setText(QCoreApplication.translate("MainWindow", u"v1.0.3", None))
     # retranslateUi
-
-
