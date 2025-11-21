@@ -28,6 +28,19 @@ os.environ["QT_FONT_DPI"] = "96"
 # ///////////////////////////////////////////////////////////////
 widgets = None
 
+
+# ==================== ДОДАТКОВІ ІМПОРТИ ====================
+
+from core.services.web_analyzer_service import WebAnalyzerService
+from core.ui.control_panel import ControlPanel
+from core.ui.text_display_widget import TextDisplayWidget
+from core.ui.llm_response_widget import LLMResponseWidget
+from core.ui.history_widget import HistoryWidget
+from core.ui.debug_panel import DebugPanel
+from core.utils.logger import get_logger
+
+logger = get_logger(__name__)
+
 class MainWindow(QMainWindow):
     def __init__(self):
         QMainWindow.__init__(self)
@@ -68,6 +81,15 @@ class MainWindow(QMainWindow):
         # ///////////////////////////////////////////////////////////////
         self.postInitialize()
 
+        # Ініціалізація Web Assistant Service
+        self.web_analyzer = WebAnalyzerService()
+        
+        # Додавання Web Assistant UI компонентів
+        self.setup_web_assistant_ui()
+        
+        # Підключення Web Assistant подій
+        self.connect_web_assistant_events()
+
     def initializeApp(self):
         """
         Ініціалізація додатку - виконується перед показом UI
@@ -89,6 +111,317 @@ class MainWindow(QMainWindow):
         
         print("[INFO] Application initialized")
 
+    # ==================== НОВИЙ МЕТОД: setupWebAssistantUI ====================
+
+    def setup_web_assistant_ui(self):
+        """Налаштування UI компонентів Web Assistant"""
+        
+        # Control Panel (панель керування)
+        self.control_panel = ControlPanel(self)
+        
+        # Додавання до існуючого layout
+        # Припустимо, у вас є права колонка або нижня панель
+        widgets.rightMenuContainer.layout().addWidget(self.control_panel)
+        
+        # Text Display Widget (оригінальний текст)
+        self.text_display = TextDisplayWidget(self)
+        widgets.stackedWidget.addWidget(self.text_display)
+        
+        # LLM Response Widget (відповідь LLM)
+        self.llm_response = LLMResponseWidget(self)
+        widgets.stackedWidget.addWidget(self.llm_response)
+        
+        # History Widget (історія запитів)
+        self.history_widget = HistoryWidget(self)
+        widgets.stackedWidget.addWidget(self.history_widget)
+        
+        # Debug Panel (логи в реальному часі)
+        self.debug_panel = DebugPanel(self)
+        # Додати до нижньої частини
+        if hasattr(widgets, 'bottomContainer'):
+            widgets.bottomContainer.layout().addWidget(self.debug_panel)
+        
+        logger.info("Web Assistant UI components initialized")
+
+
+    # ==================== НОВИЙ МЕТОД: connectWebAssistantEvents ====================
+
+    def connect_web_assistant_events(self):
+        """Підключення обробників подій Web Assistant"""
+        
+        # Control Panel signals
+        self.control_panel.start_session_signal.connect(self.on_start_session)
+        self.control_panel.stop_session_signal.connect(self.on_stop_session)
+        self.control_panel.navigate_signal.connect(self.on_navigate)
+        self.control_panel.extract_signal.connect(self.on_extract_text)
+        self.control_panel.analyze_signal.connect(self.on_analyze_text)
+        self.control_panel.clear_cache_signal.connect(self.on_clear_cache)
+        
+        logger.info("Web Assistant events connected")
+    
+    # ==================== WEB ASSISTANT ОБРОБНИКИ ====================
+
+    def on_start_session(self, mode: str):
+        """Запуск сесії Web Assistant"""
+        logger.info(f"Starting Web Assistant session: mode={mode}")
+        
+        try:
+            session_id = self.web_analyzer.start_session(mode)
+            
+            # Оновлення UI
+            self.control_panel.set_status(f"Сесія активна: {session_id[:8]}...")
+            
+            # Показати debug panel
+            if hasattr(self, 'debug_panel'):
+                self.debug_panel.log(f"✅ Сесія запущена: {mode}")
+            
+        except Exception as e:
+            logger.error(f"Failed to start session: {e}")
+            self.control_panel.set_status(f"Помилка: {e}")
+
+
+    def on_stop_session(self):
+        """Зупинка сесії"""
+        logger.info("Stopping Web Assistant session")
+        
+        try:
+            # Отримання статистики перед завершенням
+            stats = self.web_analyzer.get_statistics()
+            
+            self.web_analyzer.end_session()
+            
+            # Показати статистику
+            stats_text = (
+                f"Сесія завершена:\n"
+                f"- Сторінок відвідано: {stats['session']['pages_visited']}\n"
+                f"- Витягувань: {stats['session']['extractions_count']}\n"
+                f"- LLM запитів: {stats['session']['llm_requests_count']}\n"
+                f"- Cache hits: {stats['session']['cache_hits']}"
+            )
+            
+            if hasattr(self, 'debug_panel'):
+                self.debug_panel.log(stats_text)
+            
+            self.control_panel.set_status("Сесія завершена")
+            
+        except Exception as e:
+            logger.error(f"Failed to stop session: {e}")
+
+
+    def on_navigate(self, url: str):
+        """Навігація на URL"""
+        logger.info(f"Navigating to: {url}")
+        
+        # Запуск у фоновому потоці
+        def navigate_task(progress_callback=None):
+            try:
+                if progress_callback:
+                    progress_callback(0, "Навігація...")
+                
+                success = self.web_analyzer.navigate_to_url(url)
+                
+                if progress_callback:
+                    progress_callback(100, "Завершено")
+                
+                return {'success': success, 'url': url}
+                
+            except Exception as e:
+                logger.error(f"Navigation error: {e}")
+                return {'success': False, 'error': str(e)}
+        
+        self.runBackgroundTask(
+            navigate_task,
+            on_complete=self.on_navigate_complete,
+            on_error=self.on_navigate_error,
+            on_progress=self.on_task_progress
+        )
+
+
+    def on_navigate_complete(self, result: dict):
+        """Callback після навігації"""
+        if result['success']:
+            message = f"✅ Завантажено: {result['url']}"
+            self.control_panel.set_status("Готовий до витягування")
+        else:
+            message = f"❌ Помилка навігації: {result.get('error', 'Unknown')}"
+        
+        if hasattr(self, 'debug_panel'):
+            self.debug_panel.log(message)
+
+
+    def on_extract_text(self, selector: str, selector_type: str):
+        """Витягування тексту"""
+        logger.info(f"Extracting text: selector={selector}, type={selector_type}")
+        
+        def extract_task(progress_callback=None):
+            try:
+                if progress_callback:
+                    progress_callback(0, "Витягування тексту...")
+                
+                result = self.web_analyzer.extract_text(
+                    selector=selector,
+                    selector_type=selector_type
+                )
+                
+                if progress_callback:
+                    progress_callback(100, "Текст витягнуто")
+                
+                return result
+                
+            except Exception as e:
+                logger.error(f"Extraction error: {e}")
+                raise
+        
+        self.runBackgroundTask(
+            extract_task,
+            on_complete=self.on_extract_complete,
+            on_error=self.on_extract_error,
+            on_progress=self.on_task_progress
+        )
+
+
+    def on_extract_complete(self, result: dict):
+        """Callback після витягування"""
+        # Відображення тексту
+        if hasattr(self, 'text_display'):
+            self.text_display.set_text(
+                text=result['text'],
+                metadata=result['metadata']
+            )
+        
+        # Лог
+        message = (
+            f"✅ Текст витягнуто:\n"
+            f"  - Символів: {len(result['text'])}\n"
+            f"  - Слів: {result['metadata']['word_count']}\n"
+            f"  - Hash: {result['text_hash'][:16]}..."
+        )
+        
+        if hasattr(self, 'debug_panel'):
+            self.debug_panel.log(message)
+        
+        self.control_panel.set_status("Текст витягнуто. Готовий до аналізу")
+        
+        # Збереження для подальшого аналізу
+        self.last_extraction = result
+
+
+    def on_analyze_text(self, prompt_type: str):
+        """Аналіз тексту через LLM"""
+        if not hasattr(self, 'last_extraction'):
+            logger.warning("No text to analyze")
+            self.control_panel.set_status("Спочатку витягніть текст")
+            return
+        
+        logger.info(f"Analyzing text: prompt_type={prompt_type}")
+        
+        def analyze_task(progress_callback=None):
+            try:
+                if progress_callback:
+                    progress_callback(0, "Відправка до LLM...")
+                
+                result = self.web_analyzer.analyze_with_llm(
+                    text=self.last_extraction['text'],
+                    extraction_id=self.last_extraction['extraction_id'],
+                    url=self.last_extraction['url'],
+                    selector=self.last_extraction['selector'],
+                    prompt_type=prompt_type
+                )
+                
+                if progress_callback:
+                    progress_callback(100, "Аналіз завершено")
+                
+                return result
+                
+            except Exception as e:
+                logger.error(f"Analysis error: {e}")
+                raise
+        
+        self.runBackgroundTask(
+            analyze_task,
+            on_complete=self.on_analyze_complete,
+            on_error=self.on_analyze_error,
+            on_progress=self.on_task_progress
+        )
+
+
+    def on_analyze_complete(self, result: dict):
+        """Callback після аналізу"""
+        # Відображення відповіді LLM
+        if hasattr(self, 'llm_response'):
+            self.llm_response.set_response(
+                response=result['response'],
+                from_cache=result['from_cache'],
+                processing_time=result['processing_time'],
+                tokens_used=result['tokens_used']
+            )
+        
+        # Лог
+        cache_status = "📦 З кешу" if result['from_cache'] else "🆕 Нова відповідь"
+        message = (
+            f"✅ Аналіз завершено:\n"
+            f"  - {cache_status}\n"
+            f"  - Час: {result['processing_time']:.2f}s\n"
+            f"  - Токенів: {result['tokens_used']}"
+        )
+        
+        if hasattr(self, 'debug_panel'):
+            self.debug_panel.log(message)
+        
+        self.control_panel.set_status("Аналіз завершено")
+
+
+    def on_clear_cache(self):
+        """Очищення кешу"""
+        logger.info("Clearing cache")
+        
+        try:
+            count = self.web_analyzer.clear_cache()
+            
+            message = f"✅ Кеш очищено: {count} записів видалено"
+            
+            if hasattr(self, 'debug_panel'):
+                self.debug_panel.log(message)
+            
+            self.control_panel.set_status("Кеш очищено")
+            
+        except Exception as e:
+            logger.error(f"Cache clear error: {e}")
+
+
+    # ==================== ПОМИЛКИ ====================
+
+    def on_navigate_error(self, error: tuple):
+        """Обробка помилки навігації"""
+        exc_type, exc_value, exc_traceback = error
+        logger.error(f"Navigate error: {exc_value}")
+        
+        self.control_panel.set_status(f"Помилка: {exc_value}")
+        
+        if hasattr(self, 'debug_panel'):
+            self.debug_panel.log(f"❌ Помилка навігації: {exc_value}")
+
+
+    def on_extract_error(self, error: tuple):
+        """Обробка помилки витягування"""
+        exc_type, exc_value, exc_traceback = error
+        logger.error(f"Extract error: {exc_value}")
+        
+        self.control_panel.set_status(f"Помилка витягування: {exc_value}")
+        
+        if hasattr(self, 'debug_panel'):
+            self.debug_panel.log(f"❌ Помилка витягування: {exc_value}")
+
+
+    def on_analyze_error(self, error: tuple):
+        """Обробка помилки аналізу"""
+        exc_type, exc_value, exc_traceback = error
+        logger.error(f"Analyze error: {exc_value}")
+        
+        self.control_panel.set_status(f"Помилка LLM: {exc_value}")
+        
+        if hasattr(self, 'debug_panel'):
+            self.debug_panel.log(f"❌ Помилка LLM: {exc_value}")       
     def loadConfig(self):
         """Завантаження конфігурації"""
         # Example: load settings from file

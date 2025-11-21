@@ -1,10 +1,10 @@
 # ==================== ui/control_panel.py ====================
 
-from Pyside6.QtWidgets import (
+from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QPushButton, 
     QLabel, QComboBox, QLineEdit, QGroupBox, QTextEdit
 )
-from Pyside6.QtCore import pyqtSignal, Qt
+from PySide6.QtCore import pyqtSignal, Qt
 
 from utils.logger import get_logger
 

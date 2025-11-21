@@ -1,3 +1,42 @@
 __pycache__/
 .git/
 .pyc
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+
+# PyQt
+*.ui
+*.qrc
+
+# Database
+*.db
+*.sqlite
+data/
+
+# Logs
+logs/
+*.log
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Env
+.env
+
+# Downloads
+downloads/
+exports/
