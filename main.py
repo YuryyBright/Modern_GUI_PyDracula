@@ -5,6 +5,7 @@
 # V: 2.0.0
 #
 # Modified with async/threading support for scalable applications
+# FIXED: Web Assistant integration with Research Widget
 #
 # ///////////////////////////////////////////////////////////////
 
@@ -37,6 +38,7 @@ from core.ui.text_display_widget import TextDisplayWidget
 from core.ui.llm_response_widget import LLMResponseWidget
 from core.ui.history_widget import HistoryWidget
 from core.ui.debug_panel import DebugPanel
+from core.ui.research_widget import ResearchWidget
 from core.utils.logger import get_logger
 
 logger = get_logger(__name__)
@@ -117,29 +119,33 @@ class MainWindow(QMainWindow):
         """Налаштування UI компонентів Web Assistant"""
         
         # Control Panel (панель керування)
-        self.control_panel = ControlPanel(self)
+        self.control_panel = ControlPanel(widgets, self)
+
+
+
+        # widgets.work_tab.layout().addWidget(self.control_panel)
         
-        # Додавання до існуючого layout
-        # Припустимо, у вас є права колонка або нижня панель
-        widgets.new_page.layout().addWidget(self.control_panel)
+        # # Text Display Widget (оригінальний текст)
+        # self.text_display = TextDisplayWidget(self)
+        # widgets.stackedWidget.addWidget(self.text_display)
         
-        # Text Display Widget (оригінальний текст)
-        self.text_display = TextDisplayWidget(self)
-        widgets.stackedWidget.addWidget(self.text_display)
+        # # LLM Response Widget (відповідь LLM)
+        # self.llm_response = LLMResponseWidget(self)
+        # widgets.stackedWidget.addWidget(self.llm_response)
         
-        # LLM Response Widget (відповідь LLM)
-        self.llm_response = LLMResponseWidget(self)
-        widgets.stackedWidget.addWidget(self.llm_response)
+        # # History Widget (історія запитів)
+        # self.history_widget = HistoryWidget(self)
+        # widgets.stackedWidget.addWidget(self.history_widget)
         
-        # History Widget (історія запитів)
-        self.history_widget = HistoryWidget(self)
-        widgets.stackedWidget.addWidget(self.history_widget)
+        # # Research Widget (дослідження селекторів) - НОВЕ
+        # self.research_widget = ResearchWidget(self)
+        # widgets.stackedWidget.addWidget(self.research_widget)
         
-        # Debug Panel (логи в реальному часі)
-        self.debug_panel = DebugPanel(self)
-        # Додати до нижньої частини
-        if hasattr(widgets, 'bottomContainer'):
-            widgets.bottomContainer.layout().addWidget(self.debug_panel)
+        # # Debug Panel (логи в реальному часі)
+        # self.debug_panel = DebugPanel(self)
+        # # Додати до нижньої частини
+        # if hasattr(widgets, 'bottomContainer'):
+        #     widgets.bottomContainer.layout().addWidget(self.debug_panel)
         
         logger.info("Web Assistant UI components initialized")
 
@@ -156,6 +162,10 @@ class MainWindow(QMainWindow):
         self.control_panel.extract_signal.connect(self.on_extract_text)
         self.control_panel.analyze_signal.connect(self.on_analyze_text)
         self.control_panel.clear_cache_signal.connect(self.on_clear_cache)
+        
+        # Research Widget signals - НОВЕ
+        # self.research_widget.test_selector_signal.connect(self.on_test_selector)
+        # self.research_widget.use_selector_signal.connect(self.on_use_selector_in_analyzer)
         
         logger.info("Web Assistant events connected")
     
@@ -389,6 +399,83 @@ class MainWindow(QMainWindow):
             logger.error(f"Cache clear error: {e}")
 
 
+    # ==================== RESEARCH WIDGET HANDLERS ====================
+    
+    def on_test_selector(self, selector: str, selector_type: str):
+        """Тестування селектора"""
+        logger.info(f"Testing selector: {selector} (type: {selector_type})")
+        
+        def test_task(progress_callback=None):
+            try:
+                if progress_callback:
+                    progress_callback(0, "Тестування селектора...")
+                
+                result = self.web_analyzer.test_selector(
+                    selector=selector,
+                    selector_type=selector_type
+                )
+                
+                if progress_callback:
+                    progress_callback(100, "Тестування завершено")
+                
+                return result
+                
+            except Exception as e:
+                logger.error(f"Selector test error: {e}")
+                raise
+        
+        self.runBackgroundTask(
+            test_task,
+            on_complete=self.on_test_selector_complete,
+            on_error=self.on_test_selector_error,
+            on_progress=self.onTaskProgress
+        )
+    
+    def on_test_selector_complete(self, result: dict):
+        """Callback після тестування селектора"""
+        # Відображення результатів в Research Widget
+        if hasattr(self, 'research_widget'):
+            self.research_widget.display_results(result)
+        
+        # Лог
+        if hasattr(self, 'debug_panel'):
+            message = result.get('message', 'Тестування завершено')
+            self.debug_panel.log(message)
+    
+    def on_test_selector_error(self, error: tuple):
+        """Обробка помилки тестування"""
+        exc_type, exc_value, exc_traceback = error
+        logger.error(f"Test selector error: {exc_value}")
+        
+        if hasattr(self, 'research_widget'):
+            self.research_widget.set_status(f"❌ Помилка: {exc_value}", "error")
+        
+        if hasattr(self, 'debug_panel'):
+            self.debug_panel.log(f"❌ Помилка тестування: {exc_value}")
+    
+    def on_use_selector_in_analyzer(self, selector: str, selector_type: str):
+        """Застосування селектора в аналізаторі"""
+        logger.info(f"Applying selector to analyzer: {selector}")
+        
+        # Переключення на вкладку аналізатора
+        widgets.stackedWidget.setCurrentWidget(widgets.new_page)
+        
+        # Заповнення поля селектора в Control Panel
+        if hasattr(self.control_panel, 'selector_input'):
+            self.control_panel.selector_input.setText(selector)
+        
+        if hasattr(self.control_panel, 'selector_type_combo'):
+            idx = 0 if selector_type == "css" else 1
+            self.control_panel.selector_type_combo.setCurrentIndex(idx)
+        
+        # Лог
+        if hasattr(self, 'debug_panel'):
+            self.debug_panel.log(f"✅ Селектор застосовано: {selector}")
+        
+        # Статус
+        self.control_panel.set_status(f"Селектор готовий: {selector[:50]}...")
+
+
     # ==================== ПОМИЛКИ ====================
 
     def on_navigate_error(self, error: tuple):
@@ -421,7 +508,11 @@ class MainWindow(QMainWindow):
         self.control_panel.set_status(f"Помилка LLM: {exc_value}")
         
         if hasattr(self, 'debug_panel'):
-            self.debug_panel.log(f"❌ Помилка LLM: {exc_value}")       
+            self.debug_panel.log(f"❌ Помилка LLM: {exc_value}")
+    
+    
+    # ==================== ORIGINAL METHODS ====================
+       
     def loadConfig(self):
         """Завантаження конфігурації"""
         # Example: load settings from file
@@ -465,6 +556,10 @@ class MainWindow(QMainWindow):
         widgets.btn_new.clicked.connect(lambda: self.event_handler.handle('navigate_new'))
         widgets.btn_save.clicked.connect(lambda: self.event_handler.handle('save_data'))
         
+        # Якщо є кнопка Research в меню
+        if hasattr(widgets, 'btn_research'):
+            widgets.btn_research.clicked.connect(lambda: self.event_handler.handle('navigate_research'))
+        
         # ACTION BUTTONS with async support
         # widgets.start.clicked.connect(lambda: self.event_handler.handle('start_task'))
         # widgets.stop.clicked.connect(lambda: self.event_handler.handle('stop_task'))
@@ -488,6 +583,7 @@ class MainWindow(QMainWindow):
         self.event_handler.register('navigate_home', self.onNavigateHome)
         self.event_handler.register('navigate_widgets', self.onNavigateWidgets)
         self.event_handler.register('navigate_new', self.onNavigateNew)
+        self.event_handler.register('navigate_research', self.onNavigateResearch)  # НОВЕ
         
         # Action handlers
         self.event_handler.register('save_data', self.onSaveData)
@@ -524,6 +620,15 @@ class MainWindow(QMainWindow):
         widgets.stackedWidget.setCurrentWidget(widgets.new_page)
         UIFunctions.resetStyle(self, "btn_new")
         widgets.btn_new.setStyleSheet(UIFunctions.selectMenu(widgets.btn_new.styleSheet()))
+    
+    def onNavigateResearch(self):
+        """Перехід на сторінку дослідження"""
+        if hasattr(self, 'research_widget'):
+            widgets.stackedWidget.setCurrentWidget(self.research_widget)
+            # Якщо є кнопка для Research в меню, оновити стиль
+            if hasattr(widgets, 'btn_research'):
+                UIFunctions.resetStyle(self, "btn_research")
+                widgets.btn_research.setStyleSheet(UIFunctions.selectMenu(widgets.btn_research.styleSheet()))
 
     # ===============================================================
     # ACTION HANDLERS
@@ -653,8 +758,10 @@ class MainWindow(QMainWindow):
         print(f"[SUCCESS] Task completed: {result}")
         
         # Re-enable buttons
-        widgets.start.setEnabled(True)
-        widgets.stop.setEnabled(False)
+        if hasattr(widgets, 'start'):
+            widgets.start.setEnabled(True)
+        if hasattr(widgets, 'stop'):
+            widgets.stop.setEnabled(False)
         
         # Update UI
         # widgets.statusLabel.setText(result.get('message', 'Task completed'))
@@ -665,8 +772,10 @@ class MainWindow(QMainWindow):
         print(f"[ERROR] Task failed: {exc_value}")
         
         # Re-enable buttons
-        widgets.start.setEnabled(True)
-        widgets.stop.setEnabled(False)
+        if hasattr(widgets, 'start'):
+            widgets.start.setEnabled(True)
+        if hasattr(widgets, 'stop'):
+            widgets.stop.setEnabled(False)
         
         # Show error message
         # QMessageBox.critical(self, "Error", f"Task failed: {exc_value}")
@@ -719,12 +828,14 @@ class MainWindow(QMainWindow):
         self.dragPos = event.globalPos()
 
     def closeEvent(self, event):
+        """Обробка закриття програми"""
         print("[INFO] Closing application...")
         
         # WEB ASSISTANT CLEANUP
         if hasattr(self, 'web_analyzer'):
             try:
                 self.web_analyzer.end_session()
+                logger.info("Web Assistant session ended")
             except Exception as e:
                 logger.error(f"Error ending session: {e}")
         
@@ -732,6 +843,7 @@ class MainWindow(QMainWindow):
         self.task_manager.stop_all()
         self.task_manager.wait_all()
         
+        print("[INFO] Application closed successfully")
         event.accept()
 
 
@@ -739,4 +851,4 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
     app.setWindowIcon(QIcon("icon.ico"))
     window = MainWindow()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())

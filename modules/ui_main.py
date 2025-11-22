@@ -1,7 +1,3 @@
-
-
-from . resources_rc import *
-
 # -*- coding: utf-8 -*-
 
 ################################################################################
@@ -21,19 +17,19 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QAbstractItemView, QAbstractScrollArea, QApplication, QCheckBox,
     QComboBox, QCommandLinkButton, QFrame, QGridLayout,
-    QHBoxLayout, QHeaderView, QLabel, QLineEdit,
-    QMainWindow, QPlainTextEdit, QPushButton, QRadioButton,
-    QScrollArea, QScrollBar, QSizePolicy, QSlider,
-    QSpacerItem, QStackedWidget, QTableWidget, QTableWidgetItem,
-    QTextBrowser, QTextEdit, QVBoxLayout, QWidget)
-
-
+    QGroupBox, QHBoxLayout, QHeaderView, QLabel,
+    QLineEdit, QMainWindow, QPlainTextEdit, QPushButton,
+    QRadioButton, QScrollArea, QScrollBar, QSizePolicy,
+    QSlider, QStackedWidget, QTabWidget, QTableWidget,
+    QTableWidgetItem, QTextBrowser, QTextEdit, QVBoxLayout,
+    QWidget)
+from .resources_rc import *
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
-        MainWindow.resize(1280, 720)
+        MainWindow.resize(1366, 863)
         MainWindow.setMinimumSize(QSize(940, 560))
         self.styleSheet = QWidget(MainWindow)
         self.styleSheet.setObjectName(u"styleSheet")
@@ -43,530 +39,643 @@ class Ui_MainWindow(object):
         font.setBold(False)
         font.setItalic(False)
         self.styleSheet.setFont(font)
-        self.styleSheet.setStyleSheet(u"/* /////////////////////////////////////////////////////////////////////////////////////////////////\n"
-"\n"
-"SET APP STYLESHEET - FULL STYLES HERE\n"
-"DARK THEME - DRACULA COLOR BASED\n"
-"\n"
-"///////////////////////////////////////////////////////////////////////////////////////////////// */\n"
-"\n"
-"QWidget{\n"
-"	color: rgb(221, 221, 221);\n"
-"	font: 10pt \"Segoe UI\";\n"
+        self.styleSheet.setStyleSheet(u"QWidget{\n"
+"color: rgb(221, 221, 221);\n"
+"font: 10pt \"Segoe UI\";\n"
 "}\n"
-"\n"
+" \n"
 "/* /////////////////////////////////////////////////////////////////////////////////////////////////\n"
 "Tooltip */\n"
 "QToolTip {\n"
-"	color: #ffffff;\n"
-"	background-color: rgba(33, 37, 43, 180);\n"
-"	border: 1px solid rgb(44, 49, 58);\n"
-"	background-image: none;\n"
-"	background-position: left center;\n"
-"    background-repeat: no-repeat;\n"
-"	border: none;\n"
-"	border-left: 2px solid rgb(255, 121, 198);\n"
-"	text-align: left;\n"
-"	padding-left: 8px;\n"
-"	margin: 0px;\n"
+"color: #ffffff;\n"
+"background-color: rgba(33, 37, 43, 180);\n"
+"border: 1px solid rgb(44, 49, 58);\n"
+"background-image: none;\n"
+"background-position: left center;\n"
+"background-repeat: no-repeat;\n"
+"border: none;\n"
+"border-left: 2px solid rgb(255, 121, 198);\n"
+"text-align: left;\n"
+"padding-left: 8px;\n"
+"margin: 0px;\n"
 "}\n"
-"\n"
+" \n"
 "/* /////////////////////////////////////////////////////////////////////////////////////////////////\n"
 "Bg App */\n"
-"#bgApp {	\n"
-"	background"
-                        "-color: rgb(40, 44, 52);\n"
-"	border: 1px solid rgb(44, 49, 58);\n"
+"#bgApp {\n"
+"background-color: rgb(40, 44, 52);\n"
+"border: 1px solid rgb(44, 49, 58);\n"
 "}\n"
-"\n"
+" \n"
 "/* /////////////////////////////////////////////////////////////////////////////////////////////////\n"
 "Left Menu */\n"
-"#leftMenuBg {	\n"
-"	background-color: rgb(33, 37, 43);\n"
+"#leftMenuBg {\n"
+"background-color: rgb(33, 37, 43);\n"
 "}\n"
 "#topLogo {\n"
-"	background-color: rgb(33, 37, 43);\n"
-"	background-image: url(:/images/images/images/PyDracula.png);\n"
-"	background-position: centered;\n"
-"	background-repeat: no-repeat;\n"
+"background-color: rgb(33, 37, 43);\n"
+"b"
+                        "ackground-image: url(:/images/images/images/PyDracula.png);\n"
+"background-position: centered;\n"
+"background-repeat: no-repeat;\n"
 "}\n"
 "#titleLeftApp { font: 63 12pt \"Segoe UI Semibold\"; }\n"
 "#titleLeftDescription { font: 8pt \"Segoe UI\"; color: rgb(189, 147, 249); }\n"
-"\n"
+" \n"
 "/* MENUS */\n"
-"#topMenu .QPushButton {	\n"
-"	background-position: left center;\n"
-"    background-repeat: no-repeat;\n"
-"	border: none;\n"
-"	border-left: 22px solid transparent;\n"
-"	background-color: transparent;\n"
-"	text-align: left;\n"
-"	padding-left: 44px;\n"
+"#topMenu .QPushButton {\n"
+"background-position: left center;\n"
+"background-repeat: no-repeat;\n"
+"border: none;\n"
+"border-left: 22px solid transparent;\n"
+"background-color: transparent;\n"
+"text-align: left;\n"
+"padding-left: 44px;\n"
 "}\n"
 "#topMenu .QPushButton:hover {\n"
-"	background-color: rgb(40, 44, 52);\n"
+"background-color: rgb(40, 44, 52);\n"
 "}\n"
-"#topMenu .QPushButton:pressed {	\n"
-"	background-color: rgb(18"
-                        "9, 147, 249);\n"
-"	color: rgb(255, 255, 255);\n"
+"#topMenu .QPushButton:pressed {\n"
+"background-color: rgb(189, 147, 249);\n"
+"color: rgb(255, 255, 255);\n"
 "}\n"
-"#bottomMenu .QPushButton {	\n"
-"	background-position: left center;\n"
-"    background-repeat: no-repeat;\n"
-"	border: none;\n"
-"	border-left: 20px solid transparent;\n"
-"	background-color:transparent;\n"
-"	text-align: left;\n"
-"	padding-left: 44px;\n"
+"#bottomMenu .QPushButton {\n"
+"background-position: left center;\n"
+"background-repeat: no-repeat;\n"
+"border: none;\n"
+"border-left: 20px solid transparent;\n"
+"background-color:transparent;\n"
+"text-align: left;\n"
+"padding-left: 44px;\n"
 "}\n"
 "#bottomMenu .QPushButton:hover {\n"
-"	background-color: rgb(40, 44, 52);\n"
+""
+                        "background-color: rgb(40, 44, 52);\n"
 "}\n"
-"#bottomMenu .QPushButton:pressed {	\n"
-"	background-color: rgb(189, 147, 249);\n"
-"	color: rgb(255, 255, 255);\n"
+"#bottomMenu .QPushButton:pressed {\n"
+"background-color: rgb(189, 147, 249);\n"
+"color: rgb(255, 255, 255);\n"
 "}\n"
 "#leftMenuFrame{\n"
-"	border-top: 3px solid rgb(44, 49, 58);\n"
+"border-top: 3px solid rgb(44, 49, 58);\n"
 "}\n"
-"\n"
+" \n"
 "/* Toggle Button */\n"
 "#toggleButton {\n"
-"	background-position: left center;\n"
-"    background-repeat: no-repeat;\n"
-"	border: none;\n"
-"	border-left: 20px solid transparent;\n"
-"	background-color: rgb(37, 41, 48);\n"
-"	text-align: left;\n"
-"	padding-left: 44px;\n"
-"	color: rgb(113, 126, 149);\n"
+"background-position: left center;\n"
+"background-repeat: no-repeat;\n"
+"border: none;\n"
+"border-left: 20px solid transparent;\n"
+"background-color: rgb(37, 41, 48);\n"
+"text-align: left;\n"
+"padding-left: 44px;\n"
+"color: rgb(113, 126, 149);\n"
 "}\n"
 "#toggleButton:hover {\n"
-"	background-color: rgb(40, 44, 52);\n"
+"background-color: rgb(40, 44, 52);\n"
 "}\n"
 "#toggleButton:pressed {\n"
-"	background-color: rgb("
-                        "189, 147, 249);\n"
+"background-color: rgb(189, 147, 249);\n"
 "}\n"
-"\n"
+" \n"
 "/* Title Menu */\n"
 "#titleRightInfo { padding-left: 10px; }\n"
-"\n"
-"\n"
+" \n"
+" \n"
 "/* /////////////////////////////////////////////////////////////////////////////////////////////////\n"
 "Extra Tab */\n"
-"#extraLeftBox {	\n"
-"	background-color: rgb(44, 49, 58);\n"
+"#extraLeftBox {\n"
+"background-color: rgb(44, 49, 58);\n"
 "}\n"
-"#extraTopBg{	\n"
-"	background-color: rgb(189, 147, 249)\n"
+"#extraTopBg{\n"
+"background-color: rgb(189, 147, 249)\n"
 "}\n"
-"\n"
-"/* Icon */\n"
+" \n"
+"/* "
+                        "Icon */\n"
 "#extraIcon {\n"
-"	background-position: center;\n"
-"	background-repeat: no-repeat;\n"
-"	background-image: url(:/icons/images/icons/icon_settings.png);\n"
+"background-position: center;\n"
+"background-repeat: no-repeat;\n"
+"background-image: url(:/icons/images/icons/icon_settings.png);\n"
 "}\n"
-"\n"
+" \n"
 "/* Label */\n"
 "#extraLabel { color: rgb(255, 255, 255); }\n"
-"\n"
+" \n"
 "/* Btn Close */\n"
-"#extraCloseColumnBtn { background-color: rgba(255, 255, 255, 0); border: none;  border-radius: 5px; }\n"
+"#extraCloseColumnBtn { background-color: rgba(255, 255, 255, 0); border: none; border-radius: 5px; }\n"
 "#extraCloseColumnBtn:hover { background-color: rgb(196, 161, 249); border-style: solid; border-radius: 4px; }\n"
 "#extraCloseColumnBtn:pressed { background-color: rgb(180, 141, 238); border-style: solid; border-radius: 4px; }\n"
-"\n"
+" \n"
 "/* Extra Content */\n"
 "#extraContent{\n"
-"	border"
-                        "-top: 3px solid rgb(40, 44, 52);\n"
+"border-top: 3px solid rgb(40, 44, 52);\n"
 "}\n"
-"\n"
+" \n"
 "/* Extra Top Menus */\n"
 "#extraTopMenu .QPushButton {\n"
 "background-position: left center;\n"
-"    background-repeat: no-repeat;\n"
-"	border: none;\n"
-"	border-left: 22px solid transparent;\n"
-"	background-color:transparent;\n"
-"	text-align: left;\n"
-"	padding-left: 44px;\n"
+"background-repeat: no-repeat;\n"
+"border: none;\n"
+"border-left: 22px solid transparent;\n"
+"background-color:transparent;\n"
+"text-align: left;\n"
+"padding-left: 44px;\n"
 "}\n"
 "#extraTopMenu .QPushButton:hover {\n"
-"	background-color: rgb(40, 44, 52);\n"
+"backgro"
+                        "und-color: rgb(40, 44, 52);\n"
 "}\n"
-"#extraTopMenu .QPushButton:pressed {	\n"
-"	background-color: rgb(189, 147, 249);\n"
-"	color: rgb(255, 255, 255);\n"
+"#extraTopMenu .QPushButton:pressed {\n"
+"background-color: rgb(189, 147, 249);\n"
+"color: rgb(255, 255, 255);\n"
 "}\n"
-"\n"
+" \n"
 "/* /////////////////////////////////////////////////////////////////////////////////////////////////\n"
 "Content App */\n"
-"#contentTopBg{	\n"
-"	background-color: rgb(33, 37, 43);\n"
+"#contentTopBg{\n"
+"background-color: rgb(33, 37, 43);\n"
 "}\n"
 "#contentBottom{\n"
-"	border-top: 3px solid rgb(44, 49, 58);\n"
+"border-top: 3px solid rgb(44, 49, 58);\n"
 "}\n"
-"\n"
+" \n"
 "/* Top Buttons */\n"
-"#rightButtons .QPushButton { background-color: rgba(255, 255, 255, 0); border: none;  border-radius: 5px; }\n"
-"#rightButtons .QPushButton:hover { background-color: rgb(44, 49, 57); border-sty"
-                        "le: solid; border-radius: 4px; }\n"
+"#rightButtons .QPushButton { background-color: rgba(255, 255, 255, 0); border: none; border-radius: 5px; }\n"
+"#rightButtons .QPushButton:hover { background-color: rgb(44, 49, 57); border-style: solid; border-radius: 4px; }\n"
 "#rightButtons .QPushButton:pressed { background-color: rgb(23, 26, 30); border-style: solid; border-radius: 4px; }\n"
-"\n"
+" \n"
 "/* Theme Settings */\n"
 "#extraRightBox { background-color: rgb(44, 49, 58); }\n"
 "#themeSettingsTopDetail { background-color: rgb(189, 147, 249); }\n"
-"\n"
+" \n"
 "/* Bottom Bar */\n"
-"#bottomBar { background-color: rgb(44, 49, 58); }\n"
+"#bottomBar { background-color: rgb(44, 49, "
+                        "58); }\n"
 "#bottomBar QLabel { font-size: 11px; color: rgb(113, 126, 149); padding-left: 10px; padding-right: 10px; padding-bottom: 2px; }\n"
-"\n"
+" \n"
 "/* CONTENT SETTINGS */\n"
 "/* MENUS */\n"
-"#contentSettings .QPushButton {	\n"
-"	background-position: left center;\n"
-"    background-repeat: no-repeat;\n"
-"	border: none;\n"
-"	border-left: 22px solid transparent;\n"
-"	background-color:transparent;\n"
-"	text-align: left;\n"
-"	padding-left: 44px;\n"
+"#contentSettings .QPushButton {\n"
+"background-position: left center;\n"
+"background-repeat: no-repeat;\n"
+"border: none;\n"
+"border-left: 22px solid transparent;\n"
+"background-color:transparent;\n"
+"text-align: left;\n"
+"padding-left: 44px;\n"
 "}\n"
 "#contentSettings .QPushButton:hover {\n"
-"	background-color: rgb(40, 44, 52);\n"
+"background-color: rgb(40, 44, 52);\n"
 "}\n"
-"#contentSettings .QPushButton:pressed {	\n"
-"	background-color: rgb(189, 147, 249);\n"
-"	color: rgb"
-                        "(255, 255, 255);\n"
+"#contentSettings .QPushButton:pressed {\n"
+"background-color: rgb(189, 147, 249);\n"
+"color: rgb(255, 255, 255);\n"
 "}\n"
-"\n"
+" \n"
 "/* /////////////////////////////////////////////////////////////////////////////////////////////////\n"
 "QTableWidget */\n"
-"QTableWidget {	\n"
-"	background-color: transparent;\n"
-"	padding: 10px;\n"
-"	border-radius: 5px;\n"
-"	gridline-color: rgb(44, 49, 58);\n"
-"	border-bottom: 1px solid rgb(44, 49, 60);\n"
+"QTableWidget {\n"
+"background-color: transparent;\n"
+"padding: 10px;\n"
+"border-radius: 5px;\n"
+"gridline-color: rgb(44, 49, 58);\n"
+"border-bottom: 1px solid rgb(44, 49, 60);\n"
 "}\n"
 "QTableWidget::item{\n"
-"	border-color: rgb(44, 49, 60);\n"
-"	padding-left: 5px;\n"
-"	padding-right: 5px;\n"
-"	gridline-color: rgb(44, 49, 60);\n"
+"border-color: rgb(44, 49, 60)"
+                        ";\n"
+"padding-left: 5px;\n"
+"padding-right: 5px;\n"
+"gridline-color: rgb(44, 49, 60);\n"
 "}\n"
 "QTableWidget::item:selected{\n"
-"	background-color: rgb(189, 147, 249);\n"
+"background-color: rgb(189, 147, 249);\n"
 "}\n"
 "QHeaderView::section{\n"
-"	background-color: rgb(33, 37, 43);\n"
-"	max-width: 30px;\n"
-"	border: 1px solid rgb(44, 49, 58);\n"
-"	border-style: none;\n"
-"    border-bottom: 1px solid rgb(44, 49, 60);\n"
-"    border-right: 1px solid rgb(44, 49, 60);\n"
+"background-color: rgb(33, 37, 43);\n"
+"max-width: 30px;\n"
+"border: 1px solid rgb(44, 49, 58);\n"
+"border-style: none;\n"
+"border-bottom: 1px solid rgb(44, 49, 60);\n"
+"border-right: 1px solid rgb(44, 49, 60);\n"
 "}\n"
-"QTableWidget::horizontalHeader {	\n"
-"	background-color: rgb(33, 37, 43);\n"
+"QTableWidget::horizontalHeader {\n"
+"background-color: rgb(33, 37, 43);\n"
 "}\n"
 "QHeaderView::section:horizontal\n"
 "{\n"
-"    border: 1px solid rgb(33, 37, 43);\n"
-"	background-co"
-                        "lor: rgb(33, 37, 43);\n"
-"	padding: 3px;\n"
-"	border-top-left-radius: 7px;\n"
-"    border-top-right-radius: 7px;\n"
+"border: 1px solid rgb(33, 37, 43);\n"
+"background-color: rgb(33, 37, 43);\n"
+"padding: 3px;\n"
+"border-top-left-radius: 7px;\n"
+"border-top-right-radius: 7px;\n"
 "}\n"
 "QHeaderView::section:vertical\n"
 "{\n"
-"    border: 1px solid rgb(44, 49, 60);\n"
+"border: 1px solid rgb(44, 49, 60);\n"
 "}\n"
-"\n"
+" \n"
 "/* /////////////////////////////////////////////////////////////////////////////////////////////////\n"
 "LineEdit */\n"
 "QLineEdit {\n"
-"	background-color: rgb(33, 37, 43);\n"
-"	border-radius: 5px;\n"
-"	border: 2px solid rgb(33, 37, 43);\n"
-"	padding-left: 10px;\n"
-"	selection-color: rgb(255, 255, 255);\n"
-"	selection-background-color: rgb(255, 121, 198);\n"
+"background-color: rgb(33, 37, 43);\n"
+"border-radius: 5px;\n"
+"border: 2px solid "
+                        "rgb(33, 37, 43);\n"
+"padding-left: 10px;\n"
+"selection-color: rgb(255, 255, 255);\n"
+"selection-background-color: rgb(255, 121, 198);\n"
 "}\n"
 "QLineEdit:hover {\n"
-"	border: 2px solid rgb(64, 71, 88);\n"
+"border: 2px solid rgb(64, 71, 88);\n"
 "}\n"
 "QLineEdit:focus {\n"
-"	border: 2px solid rgb(91, 101, 124);\n"
+"border: 2px solid rgb(91, 101, 124);\n"
 "}\n"
-"\n"
+" \n"
 "/* /////////////////////////////////////////////////////////////////////////////////////////////////\n"
 "PlainTextEdit */\n"
 "QPlainTextEdit {\n"
-"	background-color: rgb(27, 29, 35);\n"
-"	border-radius: 5px;\n"
-"	padding: 10px;\n"
-"	selection-color: rgb(255, 255, 255);\n"
-"	selection-background-c"
-                        "olor: rgb(255, 121, 198);\n"
+"background-color: rgb(27, 29, 35);\n"
+"border-radius: 5px;\n"
+"padding: 10px;\n"
+"selection-color: rgb(255, 255, 255);\n"
+"selection-background-color: rgb(255, 121, 198);\n"
 "}\n"
-"QPlainTextEdit  QScrollBar:vertical {\n"
-"    width: 8px;\n"
-" }\n"
-"QPlainTextEdit  QScrollBar:horizontal {\n"
-"    height: 8px;\n"
-" }\n"
+"QPlainTextEdit QScrollBar:vertical {\n"
+"width: 8px;\n"
+"}\n"
+"QPlainTextEdit QScrollBar:horizontal {\n"
+"height: 8px;\n"
+"}\n"
 "QPlainTextEdit:hover {\n"
-"	border: 2px solid rgb(64, 71, 88);\n"
+"border: 2px solid rgb(64, 71, 88);\n"
 "}\n"
 "QPlainTextEdit:focus {\n"
-"	border: 2px solid rgb(91, 101, 124);\n"
+"border: 2px solid rgb(91, 101, 124);\n"
 "}\n"
-"\n"
+" \n"
 "/* /////////////////////////////////////////////////////////////////////////////////////////////////\n"
 "ScrollBars */\n"
-"QScrollBar:horizontal {\n"
-"    border: none;\n"
-"    background: rgb(52, 59, 72);\n"
-"    height: 8px;\n"
-"    margin: 0px 21px 0 21px;\n"
-"	border-radius: 0px;\n"
+"QScroll"
+                        "Bar:horizontal {\n"
+"border: none;\n"
+"background: rgb(52, 59, 72);\n"
+"height: 8px;\n"
+"margin: 0px 21px 0 21px;\n"
+"border-radius: 0px;\n"
 "}\n"
 "QScrollBar::handle:horizontal {\n"
-"    background: rgb(189, 147, 249);\n"
-"    min-width: 25px;\n"
-"	border-radius: 4px\n"
+"background: rgb(189, 147, 249);\n"
+"min-width: 25px;\n"
+"border-radius: 4px\n"
 "}\n"
 "QScrollBar::add-line:horizontal {\n"
-"    border: none;\n"
-"    background: rgb(55, 63, 77);\n"
-"    width: 20px;\n"
-"	border-top-right-radius: 4px;\n"
-"    border-bottom-right-radius: 4px;\n"
-"    subcontrol-position: right;\n"
-"    subcontrol-origin: margin;\n"
+"border: none;\n"
+"background: rgb(55, 63, 77);\n"
+"width: 20px;\n"
+"border-top-right-radius: 4px;\n"
+"border-bottom-right-radius: 4px;\n"
+"subcontrol-position: right;\n"
+"subcontrol-origin: margin;\n"
 "}\n"
-""
-                        "QScrollBar::sub-line:horizontal {\n"
-"    border: none;\n"
-"    background: rgb(55, 63, 77);\n"
-"    width: 20px;\n"
-"	border-top-left-radius: 4px;\n"
-"    border-bottom-left-radius: 4px;\n"
-"    subcontrol-position: left;\n"
-"    subcontrol-origin: margin;\n"
+"QScrollBar::sub-line:horizontal {\n"
+"border: none;\n"
+"background: rgb(55, 63, 77);\n"
+"width: 20px;\n"
+"border-top-left-radius: 4px;\n"
+"border-bottom-left-radius: 4px;\n"
+"subcontrol-position: left;\n"
+"subcontrol-origin: margin;\n"
 "}\n"
 "QScrollBar::up-arrow:horizontal, QScrollBar::down-arrow:horizontal\n"
 "{\n"
-"     background: none;\n"
+"background: none;\n"
 "}\n"
 "QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal\n"
 "{\n"
-"     background: none;\n"
+"background: none;\n"
 "}\n"
-" QScrollBar:vertical {\n"
-"	border: none;\n"
-"    background: rgb(52, 59, 72);\n"
-"    width: 8px;\n"
-"    margin: 21px 0 21px 0;\n"
-"	border-radius: 0px;\n"
-" }\n"
-" QScrollBar::handle:vertical {	\n"
-"	background: rgb(189, 147, 249);\n"
-"    min-height: 25px;\n"
-"	border-radius: 4px\n"
-" }\n"
-" QScrollBar::add-line:vertical {\n"
-"     border: none;\n"
-"    background: rgb(55, 63, 77);\n"
-"     height: 20px;\n"
-"	border-bottom-left-radius: 4px;\n"
-"    border-bottom-right-radius: 4px;\n"
-"     subcontrol-position: bottom;\n"
-"     su"
-                        "bcontrol-origin: margin;\n"
-" }\n"
-" QScrollBar::sub-line:vertical {\n"
-"	border: none;\n"
-"    background: rgb(55, 63, 77);\n"
-"     height: 20px;\n"
-"	border-top-left-radius: 4px;\n"
-"    border-top-right-radius: 4px;\n"
-"     subcontrol-position: top;\n"
-"     subcontrol-origin: margin;\n"
-" }\n"
-" QScrollBar::up-arrow:vertical, QScrollBar::down-arrow:vertical {\n"
-"     background: none;\n"
-" }\n"
-"\n"
-" QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {\n"
-"     background: none;\n"
-" }\n"
-"\n"
+"QScrollBar:vertical {\n"
+"border: none;\n"
+"background: rg"
+                        "b(52, 59, 72);\n"
+"width: 8px;\n"
+"margin: 21px 0 21px 0;\n"
+"border-radius: 0px;\n"
+"}\n"
+"QScrollBar::handle:vertical {\n"
+"background: rgb(189, 147, 249);\n"
+"min-height: 25px;\n"
+"border-radius: 4px\n"
+"}\n"
+"QScrollBar::add-line:vertical {\n"
+"border: none;\n"
+"background: rgb(55, 63, 77);\n"
+"height: 20px;\n"
+"border-bottom-left-radius: 4px;\n"
+"border-bottom-right-radius: 4px;\n"
+"subcontrol-position: bottom;\n"
+"subcontrol-origin: margin;\n"
+"}\n"
+"QScrollBar::sub-line:vertical {\n"
+"border: none;\n"
+"background: rgb(55, 63, 77);\n"
+"height: 20px;\n"
+"border-top-left-radius: 4px;\n"
+"border-top-right-radius: 4px;\n"
+"subcontrol-position: top;\n"
+"subcontrol-origin: margin;\n"
+"}\n"
+"QScrollBar::up-arrow:vertical, QScrollBar::down-arrow:vertical {\n"
+"background: none;\n"
+"}\n"
+" \n"
+"QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {\n"
+"background: none;\n"
+"}\n"
+" \n"
 "/* /////////////////////////////////////////////////////////////////////////////////////////////////\n"
 "CheckBox */\n"
-"QCheckBox::indicator {\n"
-"    border: 3px solid rgb(52, 59, 72);\n"
-"	width: 15px;\n"
-"	height: 15px;\n"
-"	border-radius: 10px;\n"
-"    background: rgb(44, 49, 60);\n"
+""
+                        "QCheckBox::indicator {\n"
+"border: 3px solid rgb(52, 59, 72);\n"
+"width: 15px;\n"
+"height: 15px;\n"
+"border-radius: 10px;\n"
+"background: rgb(44, 49, 60);\n"
 "}\n"
 "QCheckBox::indicator:hover {\n"
-"    border: 3px solid rgb(58, 66, 81);\n"
+"border: 3px solid rgb(58, 66, 81);\n"
 "}\n"
 "QCheckBox::indicator:checked {\n"
-"    background: 3px solid rgb(52, 59, 72);\n"
-"	border: 3px solid rgb(52, 59, 72);	\n"
-"	back"
-                        "ground-image: url(:/icons/images/icons/cil-check-alt.png);\n"
+"background: 3px solid rgb(52, 59, 72);\n"
+"border: 3px solid rgb(52, 59, 72);\n"
+"background-image: url(:/icons/images/icons/cil-check-alt.png);\n"
 "}\n"
-"\n"
+" \n"
 "/* /////////////////////////////////////////////////////////////////////////////////////////////////\n"
 "RadioButton */\n"
 "QRadioButton::indicator {\n"
-"    border: 3px solid rgb(52, 59, 72);\n"
-"	width: 15px;\n"
-"	height: 15px;\n"
-"	border-radius: 10px;\n"
-"    background: rgb(44, 49, 60);\n"
+"border: 3px solid rgb(52, 59, 72);\n"
+"width: 15px;\n"
+"height: 15px;\n"
+"border-radius: 10px;\n"
+"background: rgb(44, 49, 60);\n"
 "}\n"
 "QRadioButton::indicator:hover {\n"
-"    border: 3px solid rgb(58, 66, 81);\n"
+"border: 3px solid rgb(58, 66, 81);\n"
 "}\n"
 "QRadioButton::indicator:checked {\n"
-"    background: 3px solid rgb(94, 106, 130);\n"
-"	border: 3px solid rgb(52, 59, 72);	\n"
+"background: 3px solid rgb(94, 106, 130);\n"
+"border: 3px solid rgb(52, 59, 72);\n"
 "}\n"
-"\n"
-"/* /////////////////////////////////////////////////////////////////////////////////////////////////\n"
+" \n"
+"/* ////////////////////////////////////////////////////////////////////////////"
+                        "/////////////////////\n"
 "ComboBox */\n"
 "QComboBox{\n"
-"	background-color: rgb(27, 29, 35);\n"
-"	border-radius: 5px;\n"
-"	border: 2px solid rgb(33, 37, 43);\n"
-"	padding: 5px;\n"
-"	padding-left: 10px;\n"
+"background-color: rgb(27, 29, 35);\n"
+"border-radius: 5px;\n"
+"border: 2px solid rgb(33, 37, 43);\n"
+"padding: 5px;\n"
+"padding-left: 10px;\n"
 "}\n"
 "QComboBox:hover{\n"
-"	border: 2px solid rgb(64, 71, 88);\n"
+"border: 2px solid rgb(64, 71, 88);\n"
 "}\n"
 "QComboBox::drop-down {\n"
-"	subcontrol-origin: padding;\n"
-"	subco"
-                        "ntrol-position: top right;\n"
-"	width: 25px; \n"
-"	border-left-width: 3px;\n"
-"	border-left-color: rgba(39, 44, 54, 150);\n"
-"	border-left-style: solid;\n"
-"	border-top-right-radius: 3px;\n"
-"	border-bottom-right-radius: 3px;	\n"
-"	background-image: url(:/icons/images/icons/cil-arrow-bottom.png);\n"
-"	background-position: center;\n"
-"	background-repeat: no-reperat;\n"
-" }\n"
-"QComboBox QAbstractItemView {\n"
-"	color: rgb(255, 121, 198);	\n"
-"	background-color: rgb(33, 37, 43);\n"
-"	padding: 10px;\n"
-"	selection-background-color: rgb(39, 44, 54);\n"
+"subcontrol-origin: padding;\n"
+"subcontrol-position: top right;\n"
+"width: 25px;\n"
+"border-left-width: 3px;\n"
+"border-left-color: rgba(39, 44, 54, 150);\n"
+"border-left-style: solid;\n"
+"border-top-right-radius: 3px;\n"
+"border-bottom-right-radius: 3px;\n"
+"background-image: url(:/icons/images/icons/cil-arrow-bottom.png);\n"
+"background-position: center;\n"
+"background-repeat: no-reperat;\n"
 "}\n"
-"\n"
+"QComboBox QAbstractItemView {\n"
+"color: rgb(255, 121, 198);\n"
+"background-color: rgb(33, 37, 43);\n"
+"padding: 10px;\n"
+"selection-background-color: rgb(39, 44, 54);\n"
+"}\n"
+" \n"
 "/* /////////////////////////////////////////////////////////////////////////////////////////////////\n"
 "Sliders */\n"
-"QSlider::groove:horizontal {\n"
-"    border-radius: 5px;\n"
-"    height: 10px;\n"
-"	margin: 0px;\n"
-"	background-color: rgb(52, 59, 72);\n"
+"QSlider::groove:h"
+                        "orizontal {\n"
+"border-radius: 5px;\n"
+"height: 10px;\n"
+"margin: 0px;\n"
+"background-color: rgb(52, 59, 72);\n"
 "}\n"
 "QSlider::groove:horizontal:hover {\n"
-"	background-color: rgb(55, 62, 76);\n"
+"background-color: rgb(55, 62, 76);\n"
 "}\n"
 "QSlider::handle:horizontal {\n"
-"    background-color: rgb(189, 147, 249);\n"
-"    border: none;\n"
-"    h"
-                        "eight: 10px;\n"
-"    width: 10px;\n"
-"    margin: 0px;\n"
-"	border-radius: 5px;\n"
+"background-color: rgb(189, 147, 249);\n"
+"border: none;\n"
+"height: 10px;\n"
+"width: 10px;\n"
+"margin: 0px;\n"
+"border-radius: 5px;\n"
 "}\n"
 "QSlider::handle:horizontal:hover {\n"
-"    background-color: rgb(195, 155, 255);\n"
+"background-color: rgb(195, 155, 255);\n"
 "}\n"
 "QSlider::handle:horizontal:pressed {\n"
-"    background-color: rgb(255, 121, 198);\n"
+"background-color: rgb(255, 121, 198);\n"
 "}\n"
-"\n"
+" \n"
 "QSlider::groove:vertical {\n"
-"    border-radius: 5px;\n"
-"    width: 10px;\n"
-"    margin: 0px;\n"
-"	background-color: rgb(52, 59, 72);\n"
+"border-radius: 5px;\n"
+"width: 10px;\n"
+"margin: 0px;\n"
+"background-color: rgb(52, 59, 72);\n"
 "}\n"
 "QSlider::groove:vertical:hover {\n"
-"	background-color: rgb(55, 62, 76);\n"
+"background-color: rgb(55, 62, 76);\n"
 "}\n"
 "QSlider::handle:vertical {\n"
-"    background-color: rgb(189, 147, 249);\n"
-"	border: none;\n"
-"    height: 10px;\n"
-"    width: 10px;\n"
-"    margin: 0px;\n"
-"	border-radius: 5px;\n"
+"background-color: rgb(189, 147, 249);\n"
+"border: none;\n"
+"height: 10px;\n"
+"width: 10px;\n"
+"margin: 0px;\n"
+"border-radius: 5px;\n"
 "}\n"
 "QSlider::handle:vertical:hover {\n"
-"    background-color: rgb(195, 155, 255);\n"
-"}\n"
+"background-color: rgb(195, 155, 255);\n"
+""
+                        "}\n"
 "QSlider::handle:vertical:pressed {\n"
-"    background-color: rgb(255, 121, 198);\n"
+"background-color: rgb(255, 121, 198);\n"
 "}\n"
-"\n"
+" \n"
 "/* /////////////////////////////////////////////////////////////////////////////////////////////////\n"
 "CommandLinkButton */\n"
-"QCommandLi"
-                        "nkButton {	\n"
-"	color: rgb(255, 121, 198);\n"
-"	border-radius: 5px;\n"
-"	padding: 5px;\n"
-"	color: rgb(255, 170, 255);\n"
+"QCommandLinkButton {\n"
+"color: rgb(255, 121, 198);\n"
+"border-radius: 5px;\n"
+"padding: 5px;\n"
+"color: rgb(255, 170, 255);\n"
 "}\n"
-"QCommandLinkButton:hover {	\n"
-"	color: rgb(255, 170, 255);\n"
-"	background-color: rgb(44, 49, 60);\n"
+"QCommandLinkButton:hover {\n"
+"color: rgb(255, 170, 255);\n"
+"background-color: rgb(44, 49, 60);\n"
 "}\n"
-"QCommandLinkButton:pressed {	\n"
-"	color: rgb(189, 147, 249);\n"
-"	background-color: rgb(52, 58, 71);\n"
+"QCommandLinkButton:pressed {\n"
+"color: rgb(189, 147, 249);\n"
+"background-color: rgb(52, 58, 71);\n"
 "}\n"
-"\n"
+" \n"
 "/* /////////////////////////////////////////////////////////////////////////////////////////////////\n"
 "Button */\n"
 "#pagesContainer QPushButton {\n"
-"	border: 2px solid rgb(52, 59, 72);\n"
-"	border-radius: 5px;	\n"
-"	background-color: rgb(52, 59, 72);\n"
+"border: 2px solid rgb(52, 59, 72);\n"
+"border-radius: 5px;\n"
+"background-color: rgb(52, 59, 72);\n"
 "}\n"
 "#pagesContainer QPushButton:hover {\n"
-"	background-color: rgb(57, 65, 80);\n"
-"	border: 2px solid rgb(61, 70, 86);\n"
+"background-color: rgb(57, 65, 80);\n"
+"border: 2px solid rgb(61, 70, 86);\n"
 "}\n"
-"#pagesContainer QPushButton:pressed {	\n"
-"	background-color: rgb(35, 40, 49);\n"
-"	border: 2px solid rgb(43, 50, 61);\n"
+"#pagesContainer QPushButton:pressed {\n"
+"background-c"
+                        "olor: rgb(35, 40, 49);\n"
+"border: 2px solid rgb(43, 50, 61);\n"
 "}\n"
 "\n"
-"")
-        self.appMargins = QVBoxLayout(self.styleSheet)
-        self.appMargins.setSpacing(0)
-        self.appMargins.setObjectName(u"appMargins")
-        self.appMargins.setContentsMargins(10, 10, 10, 10)
+"/* /////////////////////////////////////////////////////////////////////////////////////////////////\n"
+"QTabWidget */\n"
+"QTabWidget::pane {\n"
+"background-color: rgb(33, 37, 43);\n"
+"border: 1px solid rgb(44, 49, 58);\n"
+"border-radius: 5px;\n"
+"}\n"
+"\n"
+"QTabBar {\n"
+"background-color: rgb(33, 37, 43);\n"
+"}\n"
+"\n"
+"QTabBar::tab {\n"
+"background-color: rgb(33, 37, 43);\n"
+"color: rgb(221, 221, 221);\n"
+"border: 1px solid rgb(44, 49, 58);\n"
+"border-bottom: none;\n"
+"border-top-left-radius: 5px;\n"
+"border-top-right-radius: 5px;\n"
+"padding: 8px 16px;\n"
+"min-width: 80px;\n"
+"}\n"
+"\n"
+"QTabBar::tab:hover {\n"
+"background-color: rgb(40, 44, 52);\n"
+"border: 1px solid rgb(52, 59, 72);\n"
+"border-bottom: none;\n"
+"}\n"
+"\n"
+"QTabBar::tab:selected {\n"
+"background-color: rgb(40, 44, 52);\n"
+"color: rgb(255, 255, 255);\n"
+"border: 1px solid rgb(189, 147, 249);\n"
+"border-bottom: none;\n"
+"border-top: 2px solid rgb(189, 147, 249);\n"
+""
+                        "}\n"
+"\n"
+"QTabBar::tab:selected:hover {\n"
+"background-color: rgb(44, 49, 58);\n"
+"}\n"
+"\n"
+"QTabBar::tab:!selected {\n"
+"margin-top: 2px;\n"
+"}\n"
+"\n"
+"QTabBar::close-button {\n"
+"image: url(:/icons/images/icons/cil-close.png);\n"
+"subcontrol-position: right;\n"
+"margin: 2px 2px 0px 0px;\n"
+"}\n"
+"\n"
+"QTabBar::close-button:hover {\n"
+"background-color: rgb(255, 121, 198);\n"
+"border-radius: 3px;\n"
+"}\n"
+"/* /////////////////////////////////////////////////////////////////////////////////////////////////\n"
+"QGroupBox */\n"
+"QGroupBox {\n"
+"    background-color: rgb(33, 37, 43);\n"
+"    border: 2px solid rgb(44, 49, 58);\n"
+"    border-radius: 5px;\n"
+"    margin-top: 8px; /* Space for title */\n"
+"}\n"
+"\n"
+"QGroupBox::title {\n"
+"    subcontrol-origin: margin;\n"
+"    subcontrol-position: top left;\n"
+"    padding: 0 5px;\n"
+"    background-color: rgb(33, 37, 43);\n"
+"    color: rgb(189, 147, 249);\n"
+"    font: bold 10pt \"Segoe UI\";\n"
+"    left: 10px;\n"
+"}\n"
+"\n"
+"QGroupBox::title:selected, QGroup"
+                        "Box::title:focus {\n"
+"    color: rgb(255, 121, 198);\n"
+"}\n"
+"\n"
+"QGroupBox:hover {\n"
+"    border: 2px solid rgb(64, 71, 88);\n"
+"}\n"
+"/* /////////////////////////////////////////////////////////////////////////////////////////////////\n"
+"QTextBrowser */\n"
+"QTextBrowser {\n"
+"    background-color: rgb(27, 29, 35);\n"
+"    border-radius: 5px;\n"
+"    border: 2px solid rgb(33, 37, 43);\n"
+"    color: rgb(221, 221, 221);\n"
+"    selection-color: rgb(255, 255, 255);\n"
+"    selection-background-color: rgb(255, 121, 198);\n"
+"    padding: 10px;\n"
+"}\n"
+"\n"
+"QTextBrowser:hover {\n"
+"    border: 2px solid rgb(64, 71, 88);\n"
+"}\n"
+"\n"
+"QTextBrowser:focus {\n"
+"    border: 2px solid rgb(91, 101, 124);\n"
+"}\n"
+"\n"
+"QTextBrowser QScrollBar:vertical {\n"
+"    width: 8px;\n"
+"}\n"
+"\n"
+"QTextBrowser QScrollBar:horizontal {\n"
+"    height: 8px;\n"
+"}\n"
+"\n"
+"/* Hyperlinks */\n"
+"QTextBrowser a {\n"
+"    color: rgb(255, 121, 198);\n"
+"    text-decoration: underline;\n"
+"}\n"
+"\n"
+"QTextBrowser a:hover {\n"
+"   "
+                        " color: rgb(255, 170, 255);\n"
+"}")
+        self.horizontalLayout_6 = QHBoxLayout(self.styleSheet)
+        self.horizontalLayout_6.setSpacing(0)
+        self.horizontalLayout_6.setObjectName(u"horizontalLayout_6")
+        self.horizontalLayout_6.setContentsMargins(10, 10, 10, 10)
         self.bgApp = QFrame(self.styleSheet)
         self.bgApp.setObjectName(u"bgApp")
         self.bgApp.setStyleSheet(u"")
@@ -1047,9 +1156,226 @@ class Ui_MainWindow(object):
         self.stackedWidget.setStyleSheet(u"background: transparent;")
         self.home = QWidget()
         self.home.setObjectName(u"home")
-        self.home.setStyleSheet(u"background-image: url(:/images/images/images/PyDracula_vertical.png);\n"
-"background-position: center;\n"
-"background-repeat: no-repeat;")
+        self.home.setStyleSheet(u"")
+        self.verticalLayout_22 = QVBoxLayout(self.home)
+        self.verticalLayout_22.setObjectName(u"verticalLayout_22")
+        self.tabWidget = QTabWidget(self.home)
+        self.tabWidget.setObjectName(u"tabWidget")
+        self.tabWidget.setMinimumSize(QSize(1156, 0))
+        self.tabWidget.setStyleSheet(u"")
+        self.work_tab = QWidget()
+        self.work_tab.setObjectName(u"work_tab")
+        self.horizontalLayout_7 = QHBoxLayout(self.work_tab)
+        self.horizontalLayout_7.setObjectName(u"horizontalLayout_7")
+        self.verticalLayout_28 = QVBoxLayout()
+        self.verticalLayout_28.setObjectName(u"verticalLayout_28")
+        self.session = QGroupBox(self.work_tab)
+        self.session.setObjectName(u"session")
+        self.horizontalLayout_8 = QHBoxLayout(self.session)
+        self.horizontalLayout_8.setObjectName(u"horizontalLayout_8")
+        self.verticalLayout_31 = QVBoxLayout()
+        self.verticalLayout_31.setObjectName(u"verticalLayout_31")
+        self.label = QLabel(self.session)
+        self.label.setObjectName(u"label")
+        self.label.setMaximumSize(QSize(16777215, 50))
+
+        self.verticalLayout_31.addWidget(self.label)
+
+        self.start_button = QPushButton(self.session)
+        self.start_button.setObjectName(u"start_button")
+        self.start_button.setMinimumSize(QSize(0, 30))
+        self.start_button.setMaximumSize(QSize(16777215, 30))
+
+        self.verticalLayout_31.addWidget(self.start_button)
+
+
+        self.horizontalLayout_8.addLayout(self.verticalLayout_31)
+
+        self.verticalLayout_30 = QVBoxLayout()
+        self.verticalLayout_30.setObjectName(u"verticalLayout_30")
+        self.mode_combo = QComboBox(self.session)
+        self.mode_combo.addItem("")
+        self.mode_combo.addItem("")
+        self.mode_combo.addItem("")
+        self.mode_combo.setObjectName(u"mode_combo")
+        self.mode_combo.setMaximumSize(QSize(16777215, 50))
+
+        self.verticalLayout_30.addWidget(self.mode_combo)
+
+        self.stop_button = QPushButton(self.session)
+        self.stop_button.setObjectName(u"stop_button")
+        self.stop_button.setMinimumSize(QSize(0, 30))
+        self.stop_button.setMaximumSize(QSize(16777215, 30))
+
+        self.verticalLayout_30.addWidget(self.stop_button)
+
+
+        self.horizontalLayout_8.addLayout(self.verticalLayout_30)
+
+
+        self.verticalLayout_28.addWidget(self.session)
+
+        self.navigation = QGroupBox(self.work_tab)
+        self.navigation.setObjectName(u"navigation")
+        self.navigation.setMaximumSize(QSize(16777215, 100))
+        self.horizontalLayout_15 = QHBoxLayout(self.navigation)
+        self.horizontalLayout_15.setObjectName(u"horizontalLayout_15")
+        self.url_layout = QHBoxLayout()
+        self.url_layout.setObjectName(u"url_layout")
+        self.url = QLabel(self.navigation)
+        self.url.setObjectName(u"url")
+        self.url.setMaximumSize(QSize(16777215, 50))
+
+        self.url_layout.addWidget(self.url)
+
+        self.url_input = QPlainTextEdit(self.navigation)
+        self.url_input.setObjectName(u"url_input")
+        self.url_input.setMaximumSize(QSize(16777215, 40))
+
+        self.url_layout.addWidget(self.url_input)
+
+        self.navigate_button = QPushButton(self.navigation)
+        self.navigate_button.setObjectName(u"navigate_button")
+        self.navigate_button.setMinimumSize(QSize(0, 30))
+        self.navigate_button.setMaximumSize(QSize(16777215, 30))
+
+        self.url_layout.addWidget(self.navigate_button)
+
+
+        self.horizontalLayout_15.addLayout(self.url_layout)
+
+
+        self.verticalLayout_28.addWidget(self.navigation)
+
+        self.extraction = QGroupBox(self.work_tab)
+        self.extraction.setObjectName(u"extraction")
+        self.extraction.setMaximumSize(QSize(16777215, 200))
+        self.verticalLayout_33 = QVBoxLayout(self.extraction)
+        self.verticalLayout_33.setObjectName(u"verticalLayout_33")
+        self.verticalLayout_32 = QVBoxLayout()
+        self.verticalLayout_32.setObjectName(u"verticalLayout_32")
+        self.selector_layout = QHBoxLayout()
+        self.selector_layout.setObjectName(u"selector_layout")
+        self.label_2 = QLabel(self.extraction)
+        self.label_2.setObjectName(u"label_2")
+        self.label_2.setMaximumSize(QSize(16777215, 50))
+
+        self.selector_layout.addWidget(self.label_2)
+
+        self.selector_input = QPlainTextEdit(self.extraction)
+        self.selector_input.setObjectName(u"selector_input")
+        self.selector_input.setMaximumSize(QSize(16777215, 50))
+
+        self.selector_layout.addWidget(self.selector_input)
+
+        self.selector_type_combo = QComboBox(self.extraction)
+        self.selector_type_combo.addItem("")
+        self.selector_type_combo.addItem("")
+        self.selector_type_combo.addItem("")
+        self.selector_type_combo.setObjectName(u"selector_type_combo")
+
+        self.selector_layout.addWidget(self.selector_type_combo)
+
+
+        self.verticalLayout_32.addLayout(self.selector_layout)
+
+
+        self.verticalLayout_33.addLayout(self.verticalLayout_32)
+
+        self.extract_button = QPushButton(self.extraction)
+        self.extract_button.setObjectName(u"extract_button")
+        self.extract_button.setMinimumSize(QSize(0, 30))
+        self.extract_button.setMaximumSize(QSize(16777215, 30))
+
+        self.verticalLayout_33.addWidget(self.extract_button)
+
+
+        self.verticalLayout_28.addWidget(self.extraction)
+
+        self.analyze = QGroupBox(self.work_tab)
+        self.analyze.setObjectName(u"analyze")
+        self.verticalLayout_35 = QVBoxLayout(self.analyze)
+        self.verticalLayout_35.setObjectName(u"verticalLayout_35")
+        self.horizontalLayout_14 = QHBoxLayout()
+        self.horizontalLayout_14.setObjectName(u"horizontalLayout_14")
+        self.label_3 = QLabel(self.analyze)
+        self.label_3.setObjectName(u"label_3")
+
+        self.horizontalLayout_14.addWidget(self.label_3)
+
+        self.prompt_type_combo = QComboBox(self.analyze)
+        self.prompt_type_combo.addItem("")
+        self.prompt_type_combo.addItem("")
+        self.prompt_type_combo.addItem("")
+        self.prompt_type_combo.addItem("")
+        self.prompt_type_combo.setObjectName(u"prompt_type_combo")
+
+        self.horizontalLayout_14.addWidget(self.prompt_type_combo)
+
+
+        self.verticalLayout_35.addLayout(self.horizontalLayout_14)
+
+        self.analyze_button = QPushButton(self.analyze)
+        self.analyze_button.setObjectName(u"analyze_button")
+        self.analyze_button.setMinimumSize(QSize(0, 30))
+
+        self.verticalLayout_35.addWidget(self.analyze_button)
+
+
+        self.verticalLayout_28.addWidget(self.analyze)
+
+        self.groupBox = QGroupBox(self.work_tab)
+        self.groupBox.setObjectName(u"groupBox")
+        self.verticalLayout_34 = QVBoxLayout(self.groupBox)
+        self.verticalLayout_34.setObjectName(u"verticalLayout_34")
+        self.clear_cache_button = QPushButton(self.groupBox)
+        self.clear_cache_button.setObjectName(u"clear_cache_button")
+        self.clear_cache_button.setMinimumSize(QSize(0, 30))
+
+        self.verticalLayout_34.addWidget(self.clear_cache_button)
+
+        self.refresh_button = QPushButton(self.groupBox)
+        self.refresh_button.setObjectName(u"refresh_button")
+        self.refresh_button.setMinimumSize(QSize(0, 30))
+
+        self.verticalLayout_34.addWidget(self.refresh_button)
+
+
+        self.verticalLayout_28.addWidget(self.groupBox)
+
+
+        self.horizontalLayout_7.addLayout(self.verticalLayout_28)
+
+        self.verticalLayout_29 = QVBoxLayout()
+        self.verticalLayout_29.setObjectName(u"verticalLayout_29")
+        self.scrollArea_2 = QScrollArea(self.work_tab)
+        self.scrollArea_2.setObjectName(u"scrollArea_2")
+        self.scrollArea_2.setWidgetResizable(True)
+        self.scrollAreaWidgetContents_3 = QWidget()
+        self.scrollAreaWidgetContents_3.setObjectName(u"scrollAreaWidgetContents_3")
+        self.scrollAreaWidgetContents_3.setGeometry(QRect(0, 0, 601, 654))
+        self.verticalLayout_26 = QVBoxLayout(self.scrollAreaWidgetContents_3)
+        self.verticalLayout_26.setObjectName(u"verticalLayout_26")
+        self.status_label = QTextBrowser(self.scrollAreaWidgetContents_3)
+        self.status_label.setObjectName(u"status_label")
+
+        self.verticalLayout_26.addWidget(self.status_label)
+
+        self.scrollArea_2.setWidget(self.scrollAreaWidgetContents_3)
+
+        self.verticalLayout_29.addWidget(self.scrollArea_2)
+
+
+        self.horizontalLayout_7.addLayout(self.verticalLayout_29)
+
+        self.tabWidget.addTab(self.work_tab, "")
+        self.develop_tab = QWidget()
+        self.develop_tab.setObjectName(u"develop_tab")
+        self.develop_tab.setMinimumSize(QSize(1150, 0))
+        self.tabWidget.addTab(self.develop_tab, "")
+
+        self.verticalLayout_22.addWidget(self.tabWidget)
+
         self.stackedWidget.addWidget(self.home)
         self.widgets = QWidget()
         self.widgets.setObjectName(u"widgets")
@@ -1192,7 +1518,7 @@ class Ui_MainWindow(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 325, 222))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 278, 222))
         self.scrollAreaWidgetContents.setStyleSheet(u" QScrollBar:vertical {\n"
 "	border: none;\n"
 "    background: rgb(52, 59, 72);\n"
@@ -1386,8 +1712,7 @@ class Ui_MainWindow(object):
         self.stackedWidget.addWidget(self.widgets)
         self.new_page = QWidget()
         self.new_page.setObjectName(u"new_page")
-        self.verticalLayout_20 = QVBoxLayout(self.new_page)
-        self.verticalLayout_20.setObjectName(u"verticalLayout_20")
+        self.new_page.setLayoutDirection(Qt.LeftToRight)
         self.stackedWidget.addWidget(self.new_page)
 
         self.verticalLayout_15.addWidget(self.stackedWidget)
@@ -1524,13 +1849,14 @@ class Ui_MainWindow(object):
         self.appLayout.addWidget(self.contentBox)
 
 
-        self.appMargins.addWidget(self.bgApp)
+        self.horizontalLayout_6.addWidget(self.bgApp)
 
         MainWindow.setCentralWidget(self.styleSheet)
 
         self.retranslateUi(MainWindow)
 
-        self.stackedWidget.setCurrentIndex(2)
+        self.stackedWidget.setCurrentIndex(0)
+        self.tabWidget.setCurrentIndex(0)
 
 
         QMetaObject.connectSlotsByName(MainWindow)
@@ -1586,6 +1912,38 @@ class Ui_MainWindow(object):
         self.closeAppBtn.setToolTip(QCoreApplication.translate("MainWindow", u"Close", None))
 #endif // QT_CONFIG(tooltip)
         self.closeAppBtn.setText("")
+        self.session.setTitle(QCoreApplication.translate("MainWindow", u"\u0421\u0435\u0441\u0456\u044f", None))
+        self.label.setText(QCoreApplication.translate("MainWindow", u"\u0420\u0435\u0436\u0438\u043c:", None))
+        self.start_button.setText(QCoreApplication.translate("MainWindow", u"\U0001f680 \U00000417\U00000430\U0000043f\U00000443\U00000441\U00000442\U00000438\U00000442\U00000438", None))
+        self.mode_combo.setItemText(0, QCoreApplication.translate("MainWindow", u"\u0420\u0443\u0447\u043d\u0438\u0439", None))
+        self.mode_combo.setItemText(1, QCoreApplication.translate("MainWindow", u"\u041d\u0430\u043f\u0456\u0432\u0430\u0432\u0442\u043e\u043c\u0430\u0442\u0438\u0447\u043d\u0438\u0439", None))
+        self.mode_combo.setItemText(2, QCoreApplication.translate("MainWindow", u"\u0410\u0432\u0442\u043e\u043c\u0430\u0442\u0438\u0447\u043d\u0438\u0439", None))
+
+        self.stop_button.setText(QCoreApplication.translate("MainWindow", u"\u23f9\ufe0f \u0417\u0443\u043f\u0438\u043d\u0438\u0442\u0438", None))
+        self.navigation.setTitle(QCoreApplication.translate("MainWindow", u"\u041d\u0430\u0432\u0456\u0433\u0430\u0446\u0456\u044f", None))
+        self.url.setText(QCoreApplication.translate("MainWindow", u"URL:", None))
+        self.navigate_button.setText(QCoreApplication.translate("MainWindow", u"\u27a1\ufe0f \u041f\u0435\u0440\u0435\u0439\u0442\u0438", None))
+        self.extraction.setTitle(QCoreApplication.translate("MainWindow", u"\u0412\u0438\u0442\u044f\u0433\u0443\u0432\u0430\u043d\u043d\u044f", None))
+        self.label_2.setText(QCoreApplication.translate("MainWindow", u"\u0421\u0435\u043b\u0435\u043a\u0442\u043e\u0440:", None))
+        self.selector_input.setPlainText(QCoreApplication.translate("MainWindow", u"article, .content, //div[@class='main']", None))
+        self.selector_type_combo.setItemText(0, QCoreApplication.translate("MainWindow", u"CSS", None))
+        self.selector_type_combo.setItemText(1, QCoreApplication.translate("MainWindow", u"XPath", None))
+        self.selector_type_combo.setItemText(2, QCoreApplication.translate("MainWindow", u"New Item", None))
+
+        self.extract_button.setText(QCoreApplication.translate("MainWindow", u"\U0001f4c4 \U00000412\U00000438\U00000442\U0000044f\U00000433\U00000442\U00000438 \U00000442\U00000435\U0000043a\U00000441\U00000442", None))
+        self.analyze.setTitle(QCoreApplication.translate("MainWindow", u"\u0410\u043d\u0430\u043b\u0456\u0437", None))
+        self.label_3.setText(QCoreApplication.translate("MainWindow", u"\u0422\u0438\u043f \u0430\u043d\u0430\u043b\u0456\u0437\u0443:", None))
+        self.prompt_type_combo.setItemText(0, QCoreApplication.translate("MainWindow", u" \u0417\u0430\u0433\u0430\u043b\u044c\u043d\u0438\u0439 \u0430\u043d\u0430\u043b\u0456\u0437", None))
+        self.prompt_type_combo.setItemText(1, QCoreApplication.translate("MainWindow", u"\u0420\u0435\u0437\u044e\u043c\u0435", None))
+        self.prompt_type_combo.setItemText(2, QCoreApplication.translate("MainWindow", u"\u0412\u0438\u0442\u044f\u0433\u0442\u0438 \u0456\u043d\u0444\u043e\u0440\u043c\u0430\u0446\u0456\u044e", None))
+        self.prompt_type_combo.setItemText(3, QCoreApplication.translate("MainWindow", u"New Item", None))
+
+        self.analyze_button.setText(QCoreApplication.translate("MainWindow", u"\U0001f9e0 \U00000410\U0000043d\U00000430\U0000043b\U00000456\U00000437\U00000443\U00000432\U00000430\U00000442\U00000438", None))
+        self.groupBox.setTitle(QCoreApplication.translate("MainWindow", u"\u0423\u0442\u0438\u043b\u0456\u0442\u0438", None))
+        self.clear_cache_button.setText(QCoreApplication.translate("MainWindow", u"\U0001f5d1\U0000fe0f \U0000041e\U00000447\U00000438\U00000441\U00000442\U00000438\U00000442\U00000438 \U0000043a\U00000435\U00000448", None))
+        self.refresh_button.setText(QCoreApplication.translate("MainWindow", u"\U0001f504 \U0000041e\U0000043d\U0000043e\U00000432\U00000438\U00000442\U00000438 \U00000441\U00000442\U0000043e\U00000440\U00000456\U0000043d\U0000043a\U00000443", None))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.work_tab), QCoreApplication.translate("MainWindow", u"\u0420\u0435\u0436\u0438\u043c \u0420\u043e\u0431\u043e\u0442\u0438", None))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.develop_tab), QCoreApplication.translate("MainWindow", u"\u0420\u0435\u0436\u0438\u043c \u0442\u0435\u0441\u0442\u0443\u0432\u0430\u043d\u043d\u044f", None))
         self.labelBoxBlenderInstalation.setText(QCoreApplication.translate("MainWindow", u"FILE BOX", None))
         self.lineEdit.setText("")
         self.lineEdit.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Type here", None))
@@ -1658,3 +2016,4 @@ class Ui_MainWindow(object):
         self.creditsLabel.setText(QCoreApplication.translate("MainWindow", u"By: Wanderson M. Pimenta", None))
         self.version.setText(QCoreApplication.translate("MainWindow", u"v1.0.3", None))
     # retranslateUi
+

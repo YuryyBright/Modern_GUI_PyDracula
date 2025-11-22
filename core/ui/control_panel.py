@@ -26,138 +26,60 @@ class ControlPanel(QWidget):
     analyze_signal = Signal(str)  # prompt_type
     clear_cache_signal = Signal()
     
-    def __init__(self, parent=None):
-        """Ініціалізація панелі керування"""
+    def __init__(self, widgets, parent=None):
+        """Ініціалізація панелі керування з посиланням на існуючі widgets"""
         super().__init__(parent)
-        self.setup_ui()
+        
+        # Присвоюємо існуючі елементи з widgets до self
+        try:
+            # Сесія
+            self.start_button = widgets.start_button
+            self.stop_button = widgets.stop_button
+            self.mode_combo = widgets.mode_combo
+            
+            # Навігація
+            self.url_input = widgets.url_input
+            self.navigate_button = widgets.navigate_button
+            
+            # Витягування
+            self.selector_input = widgets.selector_input
+            self.selector_type_combo = widgets.selector_type_combo
+            self.extract_button = widgets.extract_button
+            
+            # Аналіз
+            self.prompt_type_combo = widgets.prompt_type_combo
+            self.analyze_button = widgets.analyze_button
+            
+            # Утиліти
+            self.clear_cache_button = widgets.clear_cache_button
+            self.refresh_button = widgets.refresh_button  # Якщо є, або замініть на ваш
+            
+            # Статус
+            self.status_label = widgets.status_label
+            
+            logger.info("ControlPanel: UI elements linked successfully")
+        except AttributeError as e:
+            logger.error(f"Missing UI element: {e}")
+            raise ValueError("One or more UI elements are missing in widgets. Check Qt Designer.")
+        
+        # Підключаємо події (clicked) до обробників
+        self.connect_events()
     
-    def setup_ui(self):
-        """Налаштування UI"""
-        layout = QVBoxLayout(self)
-        
-        # ==================== Session Control ====================
-        session_group = QGroupBox("Сесія")
-        session_layout = QVBoxLayout()
-        
-        # Mode selector
-        mode_layout = QHBoxLayout()
-        mode_layout.addWidget(QLabel("Режим:"))
-        
-        self.mode_combo = QComboBox()
-        self.mode_combo.addItems(["Ручний", "Напівавтоматичний", "Автоматичний"])
-        mode_layout.addWidget(self.mode_combo)
-        session_layout.addLayout(mode_layout)
-        
-        # Session buttons
-        session_buttons = QHBoxLayout()
-        
-        self.start_button = QPushButton("🚀 Запустити")
+    def connect_events(self):
+        """Підключення обробників подій до кнопок"""
         self.start_button.clicked.connect(self.on_start_session)
-        session_buttons.addWidget(self.start_button)
-        
-        self.stop_button = QPushButton("⏹️ Зупинити")
         self.stop_button.clicked.connect(self.on_stop_session)
-        self.stop_button.setEnabled(False)
-        session_buttons.addWidget(self.stop_button)
-        
-        session_layout.addLayout(session_buttons)
-        session_group.setLayout(session_layout)
-        layout.addWidget(session_group)
-        
-        # ==================== Navigation ====================
-        nav_group = QGroupBox("Навігація")
-        nav_layout = QVBoxLayout()
-        
-        # URL input
-        url_layout = QHBoxLayout()
-        url_layout.addWidget(QLabel("URL:"))
-        
-        self.url_input = QLineEdit()
-        self.url_input.setPlaceholderText("https://example.com")
-        url_layout.addWidget(self.url_input)
-        
-        self.navigate_button = QPushButton("➡️ Перейти")
         self.navigate_button.clicked.connect(self.on_navigate)
-        url_layout.addWidget(self.navigate_button)
-        
-        nav_layout.addLayout(url_layout)
-        nav_group.setLayout(nav_layout)
-        layout.addWidget(nav_group)
-        
-        # ==================== Extraction ====================
-        extract_group = QGroupBox("Витягування")
-        extract_layout = QVBoxLayout()
-        
-        # Selector input
-        selector_layout = QHBoxLayout()
-        selector_layout.addWidget(QLabel("Селектор:"))
-        
-        self.selector_input = QLineEdit()
-        self.selector_input.setPlaceholderText("article, .content, //div[@class='main']")
-        selector_layout.addWidget(self.selector_input)
-        
-        # Selector type
-        self.selector_type_combo = QComboBox()
-        self.selector_type_combo.addItems(["CSS", "XPath"])
-        selector_layout.addWidget(self.selector_type_combo)
-        
-        extract_layout.addLayout(selector_layout)
-        
-        # Extract button
-        self.extract_button = QPushButton("📄 Витягти текст")
         self.extract_button.clicked.connect(self.on_extract)
-        extract_layout.addWidget(self.extract_button)
-        
-        extract_group.setLayout(extract_layout)
-        layout.addWidget(extract_group)
-        
-        # ==================== Analysis ====================
-        analysis_group = QGroupBox("Аналіз")
-        analysis_layout = QVBoxLayout()
-        
-        # Prompt type
-        prompt_layout = QHBoxLayout()
-        prompt_layout.addWidget(QLabel("Тип аналізу:"))
-        
-        self.prompt_type_combo = QComboBox()
-        self.prompt_type_combo.addItems([
-            "Загальний аналіз",
-            "Резюме",
-            "Витягти інформацію"
-        ])
-        prompt_layout.addWidget(self.prompt_type_combo)
-        analysis_layout.addLayout(prompt_layout)
-        
-        # Analyze button
-        self.analyze_button = QPushButton("🧠 Аналізувати")
         self.analyze_button.clicked.connect(self.on_analyze)
-        analysis_layout.addWidget(self.analyze_button)
-        
-        analysis_group.setLayout(analysis_layout)
-        layout.addWidget(analysis_group)
-        
-        # ==================== Utilities ====================
-        utils_group = QGroupBox("Утиліти")
-        utils_layout = QHBoxLayout()
-        
-        self.clear_cache_button = QPushButton("🗑️ Очистити кеш")
         self.clear_cache_button.clicked.connect(self.on_clear_cache)
-        utils_layout.addWidget(self.clear_cache_button)
         
-        self.refresh_button = QPushButton("🔄 Оновити сторінку")
-        utils_layout.addWidget(self.refresh_button)
+        # Якщо є refresh_button, підключіть його
+        # self.refresh_button.clicked.connect(self.on_refresh)
         
-        utils_group.setLayout(utils_layout)
-        layout.addWidget(utils_group)
-        
-        # ==================== Status ====================
-        self.status_label = QLabel("Статус: Готовий")
-        self.status_label.setStyleSheet("padding: 5px; background-color: #2d2d2d; border-radius: 3px;")
-        layout.addWidget(self.status_label)
-        
-        # Stretch at the end
-        layout.addStretch()
+        logger.info("ControlPanel events connected to existing buttons")
     
+    # Методи обробників (залишаються без змін, але тепер використовують self.* елементи)
     def on_start_session(self):
         """Обробка запуску сесії"""
         mode_map = {
@@ -191,7 +113,7 @@ class ControlPanel(QWidget):
     
     def on_navigate(self):
         """Обробка навігації"""
-        url = self.url_input.text().strip()
+        url = self.url_input.toPlainText().strip()
         if url:
             self.navigate_signal.emit(url)
             self.status_label.setText(f"Навігація: {url}")
@@ -199,7 +121,7 @@ class ControlPanel(QWidget):
     
     def on_extract(self):
         """Обробка витягування"""
-        selector = self.selector_input.text().strip()
+        selector = self.selector_input.toPlainText().strip()
         selector_type = self.selector_type_combo.currentText().lower()
         
         if selector:

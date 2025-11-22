@@ -1,6 +1,6 @@
 """
-Web Analyzer Service
-Головний сервіс, який координує роботу Selenium, LLM та кешування
+Web Analyzer Service - FIXED VERSION
+Виправлено проблему з SQLAlchemy Session
 """
 
 from typing import Optional, Dict, Any, Callable
@@ -28,7 +28,7 @@ logger = get_logger(__name__)
 class WebAnalyzerService:
     """
     Головний сервіс для аналізу веб-сторінок
-    Координує роботу всіх компонентів
+    ВИПРАВЛЕНО: SQLAlchemy Session management
     """
     
     def __init__(self):
@@ -56,15 +56,7 @@ class WebAnalyzerService:
         logger.info("WebAnalyzerService initialized")
     
     def start_session(self, mode: str = "manual") -> str:
-        """
-        Початок нової сесії
-        
-        Args:
-            mode: Режим роботи (auto, semi_auto, manual)
-            
-        Returns:
-            str: ID сесії
-        """
+        """Початок нової сесії"""
         self.session_id = str(uuid.uuid4())
         self.current_mode = mode
         
@@ -108,15 +100,7 @@ class WebAnalyzerService:
             self.browser = None
     
     def navigate_to_url(self, url: str) -> bool:
-        """
-        Навігація на URL
-        
-        Args:
-            url: URL сторінки
-            
-        Returns:
-            bool: True якщо успішно
-        """
+        """Навігація на URL"""
         # Валідація URL
         if not Validators.is_valid_url(url):
             logger.error(f"Invalid URL: {url}")
@@ -142,14 +126,7 @@ class WebAnalyzerService:
     ) -> Dict[str, Any]:
         """
         Витягування тексту з елемента
-        
-        Args:
-            selector: CSS/XPath селектор
-            selector_type: Тип селектора
-            url: URL (якщо None - береться поточний)
-            
-        Returns:
-            Dict з ключами: text, text_hash, url, selector, metadata
+        ВИПРАВЛЕНО: Правильне повернення extraction_id
         """
         if not self.browser:
             raise BrowserError("Browser not initialized")
@@ -196,7 +173,7 @@ class WebAnalyzerService:
                 'extracted_at': datetime.utcnow().isoformat()
             }
             
-            # Збереження в БД
+            # Збереження в БД - ВИПРАВЛЕНО
             extraction = self.db_repository.add_extraction(
                 url=url,
                 selector=selector,
@@ -207,13 +184,19 @@ class WebAnalyzerService:
                 page_title=metadata['page_title']
             )
             
+            # Отримуємо ID до закриття сесії
+            extraction_id = extraction.id
+            
+            # Закриваємо транзакцію, щоб зберегти зміни
+            self.db_repository.session.commit()
+            
             # Оновлення статистики
             self.session_stats['extractions_count'] += 1
             
             logger.info(
                 f"Text extracted: {len(text)} chars, "
                 f"hash: {text_hash[:8]}..., "
-                f"extraction_id: {extraction.id}"
+                f"extraction_id: {extraction_id}"
             )
             
             return {
@@ -221,13 +204,86 @@ class WebAnalyzerService:
                 'text_hash': text_hash,
                 'url': url,
                 'selector': selector,
-                'extraction_id': extraction.id,
+                'extraction_id': extraction_id,  # Використовуємо збережений ID
                 'metadata': metadata
             }
             
         except Exception as e:
             logger.error(f"Text extraction failed: {e}")
+            # Rollback у разі помилки
+            self.db_repository.session.rollback()
             raise ExtractionError(f"Failed to extract text: {e}")
+    
+    def test_selector(
+        self,
+        selector: str,
+        selector_type: str = "css"
+    ) -> Dict[str, Any]:
+        """
+        Тестування селектора без збереження в БД
+        Для вкладки "Дослідження"
+        
+        Returns:
+            Dict з інформацією про знайдені елементи
+        """
+        if not self.browser:
+            raise BrowserError("Browser not initialized")
+        
+        try:
+            from selenium.webdriver.common.by import By
+            
+            by_type = By.CSS_SELECTOR if selector_type == "css" else By.XPATH
+            
+            # Знаходимо всі елементи
+            elements = self.browser.find_elements(selector, by_type)
+            
+            if not elements:
+                return {
+                    'found': False,
+                    'count': 0,
+                    'message': f"❌ Елементи не знайдено для селектора: {selector}"
+                }
+            
+            # Збираємо інформацію про знайдені елементи
+            elements_info = []
+            for i, element in enumerate(elements[:10]):  # Максимум 10 елементів
+                try:
+                    text = element.text[:200] if element.text else "[Порожній текст]"
+                    tag = element.tag_name
+                    
+                    # Підсвічуємо елемент
+                    if i == 0:  # Підсвічуємо тільки перший
+                        self.browser.highlight_element(element, color="yellow", duration=1)
+                    
+                    elements_info.append({
+                        'index': i + 1,
+                        'tag': tag,
+                        'text_preview': text,
+                        'text_length': len(element.text) if element.text else 0
+                    })
+                except Exception as e:
+                    elements_info.append({
+                        'index': i + 1,
+                        'error': str(e)
+                    })
+            
+            return {
+                'found': True,
+                'count': len(elements),
+                'elements': elements_info,
+                'selector': selector,
+                'selector_type': selector_type,
+                'message': f"✅ Знайдено {len(elements)} елемент(ів)"
+            }
+            
+        except Exception as e:
+            logger.error(f"Selector test failed: {e}")
+            return {
+                'found': False,
+                'count': 0,
+                'error': str(e),
+                'message': f"❌ Помилка тестування: {e}"
+            }
     
     def analyze_with_llm(
         self,
@@ -238,20 +294,7 @@ class WebAnalyzerService:
         prompt_type: str = "analyze_text",
         use_cache: bool = True
     ) -> Dict[str, Any]:
-        """
-        Аналіз тексту за допомогою LLM
-        
-        Args:
-            text: Текст для аналізу
-            extraction_id: ID витягування
-            url: URL сторінки
-            selector: Селектор
-            prompt_type: Тип промпту (analyze_text, summarize, extract_info)
-            use_cache: Використовувати кеш
-            
-        Returns:
-            Dict з ключами: response, from_cache, processing_time, tokens_used
-        """
+        """Аналіз тексту за допомогою LLM"""
         if not self.llm_client:
             raise LLMError("LLM client not initialized")
         
@@ -290,13 +333,11 @@ class WebAnalyzerService:
             elif prompt_type == "extract_info":
                 response = self.llm_client.extract_information(text)
             else:
-                # Загальний запит
                 result = self.llm_client.generate(prompt=text)
                 response = result['response']
             
-            # Отримання повної відповіді для статистики
+            # Отримання повної відповіді
             if isinstance(response, str):
-                # Якщо метод повернув тільки текст, робимо повний запит
                 full_result = self.llm_client.generate(
                     prompt=text,
                     system_prompt=self.settings.llm.prompts.system
@@ -321,6 +362,9 @@ class WebAnalyzerService:
                 processing_time=full_result.get('processing_time'),
                 status='success'
             )
+            
+            # Commit змін
+            self.db_repository.session.commit()
             
             # Збереження в кеш
             if use_cache and self.settings.cache.enabled:
@@ -348,8 +392,9 @@ class WebAnalyzerService:
             
         except Exception as e:
             logger.error(f"LLM analysis failed: {e}")
+            self.db_repository.session.rollback()
             
-            # Збереження помилки в БД
+            # Збереження помилки
             self.db_repository.add_llm_request(
                 provider=self.settings.llm.provider,
                 model='unknown',
@@ -361,6 +406,7 @@ class WebAnalyzerService:
                 status='error',
                 error_message=str(e)
             )
+            self.db_repository.session.commit()
             
             raise LLMError(f"LLM analysis failed: {e}")
     
@@ -372,20 +418,7 @@ class WebAnalyzerService:
         use_cache: bool = True,
         progress_callback: Optional[Callable] = None
     ) -> Dict[str, Any]:
-        """
-        Комбінована операція: витягування + аналіз
-        
-        Args:
-            selector: Селектор
-            selector_type: Тип селектора
-            prompt_type: Тип промпту
-            use_cache: Використовувати кеш
-            progress_callback: Callback для прогресу
-            
-        Returns:
-            Dict з результатами витягування та аналізу
-        """
-        # Крок 1: Витягування
+        """Комбінована операція: витягування + аналіз"""
         if progress_callback:
             progress_callback(0, "Extracting text...")
         
@@ -394,7 +427,6 @@ class WebAnalyzerService:
         if progress_callback:
             progress_callback(50, "Analyzing with LLM...")
         
-        # Крок 2: Аналіз
         analysis_result = self.analyze_with_llm(
             text=extraction_result['text'],
             extraction_id=extraction_result['extraction_id'],
@@ -407,7 +439,6 @@ class WebAnalyzerService:
         if progress_callback:
             progress_callback(100, "Completed!")
         
-        # Об'єднання результатів
         return {
             'extraction': extraction_result,
             'analysis': analysis_result,
@@ -415,12 +446,7 @@ class WebAnalyzerService:
         }
     
     def get_statistics(self) -> Dict[str, Any]:
-        """
-        Отримання статистики
-        
-        Returns:
-            Dict зі статистикою
-        """
+        """Отримання статистики"""
         db_stats = self.db_repository.get_statistics()
         
         return {
@@ -431,12 +457,7 @@ class WebAnalyzerService:
         }
     
     def clear_cache(self) -> int:
-        """
-        Очищення кешу
-        
-        Returns:
-            int: Кількість видалених записів
-        """
+        """Очищення кешу"""
         count = self.cache_manager.clear_cache()
         logger.info(f"Cache cleared: {count} entries removed")
         return count
