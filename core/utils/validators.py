@@ -41,14 +41,12 @@ class Validators:
             return False
         
         if selector_type == "css":
-            # Базова перевірка CSS селектора
-            return len(selector) > 0 and not selector.startswith("//")
-        
+            if selector.startswith('/') or '[contains(' in selector:
+                return False  # Likely XPath
         elif selector_type == "xpath":
-            # XPath повинен починатися з / або //
-            return selector.startswith("/") or selector.startswith("//")
-        
-        return False
+            if selector.startswith('.') or selector.startswith('#') or ',' in selector:
+                return False  # Likely CSS
+        return bool(selector.strip())
     
     @staticmethod
     def sanitize_text(text: str, max_length: Optional[int] = None) -> str:

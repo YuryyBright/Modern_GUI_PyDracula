@@ -3,7 +3,7 @@ Web Analyzer Service - FIXED VERSION
 Виправлено проблему з SQLAlchemy Session
 """
 
-from typing import Optional, Dict, Any, Callable
+from typing import Optional, Dict, Any, Callable, List
 from datetime import datetime
 import uuid
 
@@ -119,11 +119,12 @@ class WebAnalyzerService:
         return success
     
     def extract_text(
-        self,
-        selector: str,
-        selector_type: str = "css",
-        url: Optional[str] = None
-    ) -> Dict[str, Any]:
+    self,
+    selector: str,
+    selector_type: str = "css",
+    url: Optional[str] = None
+) -> Dict[str, Any]:
+    
         """
         Витягування тексту з елемента
         ВИПРАВЛЕНО: Правильне повернення extraction_id
@@ -141,14 +142,16 @@ class WebAnalyzerService:
         
         # Витягування тексту
         try:
-            if selector_type == "css":
-                from selenium.webdriver.common.by import By
-                text = self.browser.get_element_text(selector, By.CSS_SELECTOR)
-            elif selector_type == "xpath":
-                from selenium.webdriver.common.by import By
-                text = self.browser.get_element_text(selector, By.XPATH)
-            else:
-                raise ValidationError(f"Unknown selector type: {selector_type}")
+            from selenium.webdriver.common.by import By
+            by_type = By.CSS_SELECTOR if selector_type == "css" else By.XPATH
+            
+            # FIXED: Use find_elements instead of find_element to handle multiple elements and collect all text
+            elements = self.browser.driver.find_elements(by_type, selector)
+            if not elements:
+                raise ExtractionError(f"No elements found for selector: {selector}")
+            
+            texts = [element.text.strip() for element in elements if element.text.strip()]
+            text = '\n\n'.join(texts)
             
             if not text:
                 raise ExtractionError(f"No text found for selector: {selector}")
@@ -187,9 +190,6 @@ class WebAnalyzerService:
             # Отримуємо ID до закриття сесії
             extraction_id = extraction.id
             
-            # Закриваємо транзакцію, щоб зберегти зміни
-            self.db_repository.session.commit()
-            
             # Оновлення статистики
             self.session_stats['extractions_count'] += 1
             
@@ -210,10 +210,7 @@ class WebAnalyzerService:
             
         except Exception as e:
             logger.error(f"Text extraction failed: {e}")
-            # Rollback у разі помилки
-            self.db_repository.session.rollback()
-            raise ExtractionError(f"Failed to extract text: {e}")
-    
+            raise ExtractionError(f"Failed to extract text: {e}")    
     def test_selector(
         self,
         selector: str,
@@ -363,9 +360,6 @@ class WebAnalyzerService:
                 status='success'
             )
             
-            # Commit змін
-            self.db_repository.session.commit()
-            
             # Збереження в кеш
             if use_cache and self.settings.cache.enabled:
                 self.cache_manager.cache_response(
@@ -392,7 +386,6 @@ class WebAnalyzerService:
             
         except Exception as e:
             logger.error(f"LLM analysis failed: {e}")
-            self.db_repository.session.rollback()
             
             # Збереження помилки
             self.db_repository.add_llm_request(
@@ -406,7 +399,6 @@ class WebAnalyzerService:
                 status='error',
                 error_message=str(e)
             )
-            self.db_repository.session.commit()
             
             raise LLMError(f"LLM analysis failed: {e}")
     
@@ -461,6 +453,61 @@ class WebAnalyzerService:
         count = self.cache_manager.clear_cache()
         logger.info(f"Cache cleared: {count} entries removed")
         return count
+
+    # FIXED: Add missing history methods (called from main.py event handlers)
+    def get_history(self) -> List[Dict[str, Any]]:
+        """Отримання історії витягувань з можливим аналізом LLM"""
+        extractions = self.db_repository.get_recent_extractions(limit=100)
+        history = []
+        for ext in extractions:
+            llm_reqs = self.db_repository.get_llm_requests_by_extraction(ext.id)
+            llm_req = llm_reqs[0] if llm_reqs else None
+            item = {
+                'extraction_id': ext.id,
+                'url': ext.url,
+                'selector': ext.selector,
+                'selector_type': ext.selector_type,
+                'text_preview': (ext.extracted_text[:100] + '...') if ext.extracted_text else '',
+                'extracted_at': ext.created_at.isoformat(),
+                'page_title': ext.page_title,
+                'has_analysis': bool(llm_req),
+                'analysis_status': llm_req.status if llm_req else 'pending'
+            }
+            history.append(item)
+        return history
+    
+    def clear_history(self) -> None:
+        """Очищення історії витягувань та LLM запитів"""
+        with self.db_repository.get_session() as session:
+            session.query(LLMRequest).delete()
+            session.query(ExtractionHistory).delete()
+        logger.info("History cleared")
+    
+    def load_from_history(self, extraction_id: int) -> Dict[str, Any]:
+        """Завантаження елемента історії"""
+        ext = self.db_repository.get_extraction_by_id(extraction_id)
+        if not ext:
+            raise ValueError(f"Extraction {extraction_id} not found")
+        
+        llm_reqs = self.db_repository.get_llm_requests_by_extraction(extraction_id)
+        llm_req = llm_reqs[0] if llm_reqs else None
+        
+        metadata = {
+            'page_title': ext.page_title,
+            'word_count': TextCleaner.word_count(ext.extracted_text),
+            'char_count': ext.text_length,
+            'extracted_at': ext.created_at.isoformat()
+        }
+        
+        data = {
+            'text': ext.extracted_text,
+            'metadata': metadata,
+            'response': llm_req.response if llm_req else '',
+            'from_cache': False,  # Can be enhanced to check cache if needed
+            'time': llm_req.processing_time if llm_req else 0,
+            'tokens': llm_req.tokens_used if llm_req else 0
+        }
+        return data
     
     def __enter__(self):
         """Context manager entry"""

@@ -42,7 +42,8 @@ class DatabaseRepository:
         self.SessionLocal = sessionmaker(
             autocommit=False,
             autoflush=False,
-            bind=self.engine
+            bind=self.engine,
+            expire_on_commit=False  # FIXED: Prevent attribute expiration on commit, allowing access to attributes on detached instances without raising DetachedInstanceError
         )
         
         # Створення таблиць
@@ -104,7 +105,7 @@ class DatabaseRepository:
             )
             session.add(extraction)
             session.flush()
-            session.refresh(extraction)
+            # No longer need refresh with expire_on_commit=False
             return extraction
     
     def get_extraction_by_id(self, extraction_id: int) -> Optional[ExtractionHistory]:
@@ -189,7 +190,7 @@ class DatabaseRepository:
             )
             session.add(request)
             session.flush()
-            session.refresh(request)
+            # Optional: session.refresh(request) if needed for other attributes
             return request
     
     def get_llm_request_by_id(self, request_id: int) -> Optional[LLMRequest]:
@@ -241,7 +242,7 @@ class DatabaseRepository:
             )
             session.add(cached)
             session.flush()
-            session.refresh(cached)
+            # Optional: session.refresh(cached)
             return cached
     
     def get_cached_response(self, cache_key: str) -> Optional[CachedResponse]:
@@ -330,7 +331,7 @@ class DatabaseRepository:
             )
             session.add(app_session)
             session.flush()
-            session.refresh(app_session)
+            # Optional: session.refresh(app_session)
             return app_session
     
     def update_session_stats(
@@ -395,7 +396,7 @@ class DatabaseRepository:
             )
             session.add(sel)
             session.flush()
-            session.refresh(sel)
+            # Optional: session.refresh(sel)
             return sel
     
     def get_selectors_by_domain(

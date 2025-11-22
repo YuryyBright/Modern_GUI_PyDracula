@@ -445,9 +445,16 @@ class MainWindow(QMainWindow):
         def task(progress_callback=None):
             if progress_callback:
                 progress_callback(0, "Витягування тексту...")
-            text, metadata = self.web_analyzer.extract_text(selector, selector_type)
+            
+            extraction_result = self.web_analyzer.extract_text(selector, selector_type)
+            
+            text = extraction_result['text']
+            metadata = extraction_result['metadata']
+
             if progress_callback:
                 progress_callback(100, "Текст витягнуто")
+            
+            # Return the data structure expected by on_complete
             return {'success': True, 'text': text, 'metadata': metadata}
         
         def on_complete(result: dict):
